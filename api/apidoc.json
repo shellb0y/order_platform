@@ -1,0 +1,15 @@
+{
+  "name": "商户话费充值相关接口",
+  "version": "1.0.0",
+  "description": "在线文档",
+  "title": "话费充值在线接口文档",
+  "url" : "http://115.28.102.142:8000/v1/api",
+  "header": {
+    "title": "注意",
+    "filename": "header.md"
+  },
+  "template": {
+    "withCompare": false,
+    "withGenerator": true
+  }
+}
