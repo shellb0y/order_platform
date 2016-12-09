@@ -6,6 +6,7 @@ var router = require('koa-router')();
 //var db = require('../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
+var redis = require("../redis");
 
 var debug = 1;
 
@@ -305,7 +306,17 @@ router.get('/partner/balance', async function (ctx, next) {
 });
 
 router.get('/test', async function (ctx) {
-    ctx.body = ++debug;
+    var promise = new Promise((resolve,reject)=>{
+        redis.client.incr('order_platform:trade_index',(err,data)=>{
+            if(err)
+                reject(err);
+            else
+                resolve(data);
+        });
+    });
+
+    var data = await promise;
+    ctx.body = data;
 });
 
 module.exports = router;
