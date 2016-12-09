@@ -15,4 +15,15 @@ client.on('error', function (err) {
     console.log('redis error - ' + err);
 });
 
+//exports.hgetallSync = async function (key) {
+//    return await new Pormise((resovle, reject)=> {
+//        client.hgetall(key, (err, data)=> {
+//            if (err)
+//                reject(err);
+//            else
+//                resovle(data);
+//        });
+//    });
+//};
+
 exports.client = client;
