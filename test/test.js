@@ -16,8 +16,12 @@ var db = require('../models/db');
 //})();
 
 
-(async function () {
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','11') where order_id=1`);
-    console.log(ret[0].affectedRows);
-})();
+//(async function () {
+//    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','11') where order_id=1`);
+//    console.log(ret[0].affectedRows);
+//})();
+
+
+var logger = require('koa-logger');
+logger().error('test');
 

@@ -2,6 +2,7 @@
  * Created by zt on 16/12/9.
  */
 var redis = require("../redis");
+//var client = redis.createClient();
 
 //redis.client.set("string key1", "string val", (err, data)=> {
 //    if (!err) {
@@ -9,11 +10,12 @@ var redis = require("../redis");
 //    }
 //});
 
-//redis.client.get('order_platform:trade_index1', (err, data)=> {
+//client.get('order_platform:trade_index', (err, data)=> {
 //    if (!err) {
 //        console.log(data);
 //    }
 //});
+//client.quit();
 
 //redis.client.set('order_platform:trade_index1',0);
 
@@ -42,8 +44,6 @@ var redis = require("../redis");
 //    console.log(data)
 //});
 
-console.log(redis.client());
-console.log(redis.client());
 
 //var brpop = function () {
 //    console.log('brpop');

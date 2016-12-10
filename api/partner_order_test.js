@@ -305,7 +305,7 @@ router.get('/partner/balance', async function (ctx, next) {
 });
 
 router.get('/test', async function (ctx) {
-    ctx.body = ++debug;
+    throw new Error('test')
 });
 
 module.exports = router;
