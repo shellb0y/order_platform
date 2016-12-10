@@ -1,15 +1,11 @@
 /**
  * Created by zt on 16/12/7.
  */
-'use strict';
+'use strict'
 var router = require('koa-router')();
-//var db = require('../models/db');
+var db = require('../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
-var redis = require("../redis");
-var utility = require('../utility');
-require('../date_ex');
-require('../string_ex');
 
 var debug = 1;
 
@@ -48,7 +44,7 @@ function md5(text) {
  *     HTTP/1.1 200 OK
  *     {
  *       "success": true,
- *       "data":{"trade_no":"JDPH2016120810000000000001"}
+ *       "data":{"trade_no":"2016120810000000000001"}
  *     }
  *
  * @apiError DATA_INVALID   parameter error.
@@ -127,34 +123,15 @@ router.get('/order', async function (ctx, next) {
     var _sign = md5(data);
 
     if (_sign == sign) {
-        var redis_client = redis.createClient();
-
-        var date = new Date().format('yyyyMMddhhmmssS');
-        var random = utility.random_letter(4).toUpperCase();
-        var index = await redis.incrSync(redis_client);
-        var trade_no = `${date}${random}A${index.toString().padLeft(5, '0')}`;
-        var order = {
-            'partner': partner,
-            'mobile': mobile,
-            'amount': amount,
-            'callback': callback,
-            'partner_order_id': id
-        };
-
-        redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
-        redis_client.expire(`order_platform:phone_charge:trade_no:${trade_no}`, 24 * 60 * 60);
-        redis_client.lpush('order_platform:phone_charge:order', trade_no);
-        redis_client.quit();
-
-        ret = {'success': true, 'data': {'trade_no': trade_no}};
-        //t = Date.now();
-        //var _target = `${amount}${id}${secret}1${t}${trade_no})`;
-        //console.log('callback target:' + _target);
-        //sign = md5(_target);
-        //console.log('callback sign:' + sign);
-        //var url = `${decodeURI(callback)}?partner_order_id=${id}&trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
-        //var resp = await request.get(url).catch((e)=>console.log(e));
-        //console.log(resp);
+        ret = {'success': true, 'data': {'trade_no': '2016120810000000000001'}};
+        t = Date.now();
+        var _target = `${amount}${id}${secret}1${t}2016120810000000000001)`;
+        console.log('callback target:' + _target);
+        sign = md5(_target);
+        console.log('callback sign:' + sign);
+        var url = `${decodeURI(callback)}?partner_order_id=${id}&trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
+        var resp = await request.get(url).catch((e)=>console.log(e));
+        console.log(resp);
 
     }
     else {
@@ -328,17 +305,7 @@ router.get('/partner/balance', async function (ctx, next) {
 });
 
 router.get('/test', async function (ctx) {
-    var promise = new Promise((resolve, reject)=> {
-        redis.client.incr('order_platform:trade_index', (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resolve(data);
-        });
-    });
-
-    var data = await promise;
-    ctx.body = data;
+    ctx.body = ++debug;
 });
 
 module.exports = router;

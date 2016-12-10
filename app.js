@@ -11,6 +11,7 @@ const logger = require('koa-logger');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
+const order = require('./api/order');
 const partner_order_api = require('./api/partner_order');
 const __static = require('koa-static');
 
@@ -36,13 +37,14 @@ app.use(async (ctx, next) => {
 //router.use('/doc/api', __static(__dirname + '/apidoc'));
 router.use('/', index.routes(), index.allowedMethods());
 router.use('/v1/api', partner_order_api.routes(), partner_order_api.allowedMethods());
+router.use('/api', order.routes(), order.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
 
 app.on('error', function(err, ctx){
-  console.log(err);
-  logger.error('server error', err, ctx);
+  console.error(err);
+  //logger.error('server error', err, ctx);
 });
 
 

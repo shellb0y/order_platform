@@ -9,16 +9,15 @@ var redis = require("../redis");
 //    }
 //});
 
-//redis.client.get('order_platform:trade_index', (err, data)=> {
+//redis.client.get('order_platform:trade_index1', (err, data)=> {
 //    if (!err) {
 //        console.log(data);
 //    }
 //});
 
+//redis.client.set('order_platform:trade_index1',0);
 
-//redis.client.set('order_platform:current_date',date.now());
-
-//redis.client.incr('order_platform:trade_index',(err,data)=>{
+//redis.client.incr('order_platform:trade_index1',(err,data)=>{
 //    console.log(data);
 //});
 
@@ -30,20 +29,21 @@ var redis = require("../redis");
 
 //var clientBlocking = redis.client.duplicate();
 
-redis.client.lpush("trades", "$100.00", function (err, data) {
-    console.log(data)
-});
-redis.client.lpush("trades", "$101.00", function (err, data) {
-    console.log(data)
-});
-redis.client.lpush("trades", "$102.00", function (err, data) {
-    console.log(data)
-});
-redis.client.lpush("trades", "$103.00", function (err, data) {
-    console.log(data)
-});
+//redis.client.lpush("trades", "$100.00", function (err, data) {
+//    console.log(data)
+//});
+//redis.client.lpush("trades", "$101.00", function (err, data) {
+//    console.log(data)
+//});
+//redis.client.lpush("trades", "$102.00", function (err, data) {
+//    console.log(data)
+//});
+//redis.client.lpush("trades", "$103.00", function (err, data) {
+//    console.log(data)
+//});
 
-redis.client.quit();
+console.log(redis.client());
+console.log(redis.client());
 
 //var brpop = function () {
 //    console.log('brpop');
