@@ -3,7 +3,7 @@
  */
 'use strict';
 var router = require('koa-router')();
-//var db = require('../models/db');
+var db = require('../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
 var redis = require("../redis");
@@ -77,7 +77,7 @@ router.get('/order', async function (ctx, next) {
     var callback = ctx.request.query.callback;
     var mobile = ctx.request.query.mobile;
     var partner = ctx.request.query.partner;
-    var secret = 'y(T|D/g6';
+    var secret = '';
     var ret = {};
 
     if (!sign) {
@@ -111,15 +111,27 @@ router.get('/order', async function (ctx, next) {
         ctx.body = ret;
         return;
     }
-    else if (!secret) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner invalid'}};
-        ctx.body = ret;
-        return;
-    }
 
     if (!(parseFloat(amount) == 100)) {
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'amount not support'}};
         ctx.body = ret;
+        return;
+    }
+
+    var partners = await db.sequelize.query(`select _data from partner where _data->'$.name' = '${partner}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    var _partner = {};
+    if (partners.length > 0) {
+        _partner = JSON.parse(partners[0]._data);
+        secret = _partner.secret;
+    } else {
+        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
         return;
     }
 
@@ -134,11 +146,11 @@ router.get('/order', async function (ctx, next) {
         var index = await redis.incrSync(redis_client);
         var trade_no = `${date}${random}A${index.toString().padLeft(5, '0')}`;
         var order = {
-            'partner': partner,
             'mobile': mobile,
             'amount': amount,
             'callback': callback,
-            'partner_order_id': id
+            'partner_order_id': id,
+            'partner': JSON.stringify(_partner)
         };
 
         redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
@@ -208,7 +220,6 @@ router.get('/order', async function (ctx, next) {
  *     }
  * */
 router.get('/order/status', async function (ctx, next) {
-    var secret = 'y(T|D/g6';
     var trade_no = ctx.request.query.trade_no;
     var sign = ctx.request.query.sign;
     var t = ctx.request.query.t;
@@ -233,12 +244,48 @@ router.get('/order/status', async function (ctx, next) {
         return;
     }
 
-    console.log(ctx.request.query.sign);
-    var data = partner + secret + t + trade_no;
+    var partners = await db.sequelize.query(`select _data from partner where _data->'$.name' = '${partner}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    var _partner = {};
+    if (partners.length > 0) {
+        _partner = JSON.parse(partners[0]._data);
+    } else {
+        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
+        return;
+    }
+
+    var data = partner + _partner.secret + t + trade_no;
     var _sign = md5(data);
 
     if (_sign == sign) {
-        ret = {'success': true, 'data': {'status': '等候处理'}};
+        ret = {'success': true, 'data': {'status': ''}};
+        var redis_client = redis.createClient();
+        if (await redis.existSync(redis_client, `order_platform:phone_charge:trade_no:${trade_no}`).catch(err=> {
+                if (err instanceof Error)
+                    throw err;
+                else
+                    throw new Error(err);
+            })) {
+            ret.data.status = '等候处理';
+        } else {
+            var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${trade_no}'`,
+                {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+                if (err instanceof Error)
+                    throw err;
+                else
+                    throw new Error(err);
+            });
+            if (orders.length > 0)
+                ret.data.status = JSON.parse(orders[0]._data).status;
+            else
+                ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'order not found'}};
+        }
     }
     else {
         ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
@@ -290,7 +337,7 @@ router.get('/order/status', async function (ctx, next) {
  *     }
  * */
 router.get('/partner/balance', async function (ctx, next) {
-    var secret = 'y(T|D/g6';
+    var secret;
     var partner = ctx.request.query.partner;
     var sign = ctx.request.query.sign;
     var t = ctx.request.query.t;
@@ -310,11 +357,28 @@ router.get('/partner/balance', async function (ctx, next) {
         return;
     }
 
+    var partners = await db.sequelize.query(`select _data from partner where _data->'$.name' = '${partner}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    var _partner = {};
+    if (partners.length > 0) {
+        _partner = JSON.parse(partners[0]._data);
+        secret = _partner.secret;
+    } else {
+        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
+        return;
+    }
+
     var data = partner + secret + t;
     var _sign = md5(data);
 
     if (_sign == sign) {
-        ret = {'success': true, 'data': {'balance': 9999.99}};
+        ret = {'success': true, 'data': {'balance': _partner.balance}};
     }
     else {
         ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
@@ -327,18 +391,20 @@ router.get('/partner/balance', async function (ctx, next) {
     ctx.body = ret;
 });
 
-router.get('/test', async function (ctx) {
+router.get('/test', async function (ctx, next) {
     var promise = new Promise((resolve, reject)=> {
-        redis.client.incr('order_platform:trade_index', (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resolve(data);
-        });
+        reject(1);
     });
 
-    var data = await promise;
+    var data = await promise.catch((err)=> {
+        throw new Error(err);
+    });
     ctx.body = data;
+});
+
+router.get('/callback', async (ctx, next)=> {
+    console.log(ctx.request.query);
+    ctx.body = 1;
 });
 
 module.exports = router;

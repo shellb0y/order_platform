@@ -17,6 +17,6 @@ db.sequelize = sequelize;
 
 db.account = sequelize.import('./account_');
 db.order = sequelize.import('./order_');
-
+db.partner = sequelize.import('./partner');
 
 module.exports = db;

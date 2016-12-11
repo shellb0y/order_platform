@@ -10,11 +10,22 @@ require('../string_ex');
 
 router.post('/order', async (ctx, next)=> {
     if (ctx.request.body) {
-        var order = await db.order.create({_data: ctx.request.body, created: Date.now()});
-        if (order) {
-            ctx.body = order.order_id;
+        if (ctx.request.body.id) {
+            db.order.update({
+                _data: ctx.request.body.data,
+                modified: Date.now()
+            }, {where: {order_id: ctx.request.body.id}}).catch((err)=> {
+                throw err;
+            });
+
+            ctx.body = 1;
         } else {
-            ctx.body = -1;
+            var order = await db.order.create({_data: ctx.request.body.data, created: Date.now()});
+            if (order) {
+                ctx.body = order.order_id;
+            } else {
+                ctx.body = -1;
+            }
         }
     }
     else {
@@ -23,6 +34,8 @@ router.post('/order', async (ctx, next)=> {
 });
 
 router.post('/order/status', async (ctx, next)=> {
+    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${ctx.request.body.status}') where order_id=${ctx.request.body.order_id}`);
+    ctx.body = ret[0].affectedRows;
     //[OkPacket {
     //    fieldCount: 0,
     //    affectedRows: 1,
@@ -43,8 +56,6 @@ router.post('/order/status', async (ctx, next)=> {
     //    protocol41: true,
     //    changedRows: 0
     //}]
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${ctx.request.body.status}') where order_id=${ctx.request.body.order_id}`);
-    ctx.body = ret[0].affectedRows;
 });
 
 module.exports = router;

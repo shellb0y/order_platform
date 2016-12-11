@@ -13,6 +13,8 @@ const index = require('./routes/index');
 const users = require('./routes/users');
 const order = require('./api/order');
 const partner_order_api = require('./api/partner_order');
+const partner_api = require('./api/partner');
+const account_api = require('./api/account');
 const partner_order_api_test = require('./api/partner_order_test');
 const __static = require('koa-static');
 
@@ -41,6 +43,8 @@ router.use('/', index.routes(), index.allowedMethods());
 router.use('/v1/api', partner_order_api.routes(), partner_order_api.allowedMethods());
 router.use('/test/api', partner_order_api_test.routes(), partner_order_api_test.allowedMethods());
 router.use('/api', order.routes(), order.allowedMethods());
+router.use('/api/partner', partner_api.routes(), partner_api.allowedMethods());
+router.use('/api/account', account_api.routes(), account_api.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response

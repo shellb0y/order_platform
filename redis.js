@@ -15,7 +15,8 @@ exports.hgetallSync = async function (client, key) {
     });
 };
 
-exports.incrSync = async (key)=> {
+
+exports.incrSync = async (client)=> {
     return await new Promise((resovle, reject)=> {
         client.incr('order_platform:trade_index', (err, data)=> {
             if (err)
@@ -26,9 +27,9 @@ exports.incrSync = async (key)=> {
     });
 };
 
-exports.incrSync = async (client)=> {
+exports.existSync = async (client,key)=> {
     return await new Promise((resovle, reject)=> {
-        client.incr('order_platform:trade_index', (err, data)=> {
+        client.exists(key, (err, data)=> {
             if (err)
                 reject(err);
             else

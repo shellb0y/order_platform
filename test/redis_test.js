@@ -2,7 +2,8 @@
  * Created by zt on 16/12/9.
  */
 var redis = require("../redis");
-//var client = redis.createClient();
+var client = redis.createClient();
+
 
 //redis.client.set("string key1", "string val", (err, data)=> {
 //    if (!err) {
@@ -17,7 +18,15 @@ var redis = require("../redis");
 //});
 //client.quit();
 
-//redis.client.set('order_platform:trade_index1',0);
+//client.set('order_platform:phone_charge:trade_no:1111','11111');
+client.hgetall('order_platform:phone_charge:trade_no:20161211203604436HPQNA00001',(err,data)=>{
+    console.log(data);
+});
+//client.del('order_platform:phone_charge:trade_no:1111');
+//client.exists('order_platform:phone_charge:trade_no:1111',(err,data)=>{
+//    console.log(data);
+//});
+client.quit();
 
 //redis.client.incr('order_platform:trade_index1',(err,data)=>{
 //    console.log(data);
