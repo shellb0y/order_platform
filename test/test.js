@@ -22,6 +22,6 @@ var db = require('../models/db');
 //})();
 
 
-var logger = require('koa-logger');
-logger().error('test');
+
+
 

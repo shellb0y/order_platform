@@ -139,13 +139,19 @@ router.get('/order', async function (ctx, next) {
     var _sign = md5(data);
 
     if (_sign == sign) {
+        if (_partner.balance < parseFloat(amount)) {
+            ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'balance not enough'}};
+            return;
+        }
+
         var redis_client = redis.createClient();
 
         var date = new Date().format('yyyyMMddhhmmssS');
         var random = utility.random_letter(4).toUpperCase();
         var index = await redis.incrSync(redis_client);
-        var trade_no = `${date}${random}A${index.toString().padLeft(5, '0')}`;
+        var trade_no = `${date}${random}A${(index+'').padLeft(5, '0')}`;
         var order = {
+            'trade_no':trade_no,
             'mobile': mobile,
             'amount': amount,
             'callback': callback,
@@ -159,15 +165,6 @@ router.get('/order', async function (ctx, next) {
         redis_client.quit();
 
         ret = {'success': true, 'data': {'trade_no': trade_no}};
-        //t = Date.now();
-        //var _target = `${amount}${id}${secret}1${t}${trade_no})`;
-        //console.log('callback target:' + _target);
-        //sign = md5(_target);
-        //console.log('callback sign:' + sign);
-        //var url = `${decodeURI(callback)}?partner_order_id=${id}&trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
-        //var resp = await request.get(url).catch((e)=>console.log(e));
-        //console.log(resp);
-
     }
     else {
         ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}

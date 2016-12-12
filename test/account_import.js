@@ -6,7 +6,7 @@ var readline = require('readline'),
     fs = require('fs');
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('jd_account.txt'),
+    input: fs.createReadStream('jd_account_2.txt'),
     output: process.stdout,
     terminal: false
 });
@@ -16,7 +16,8 @@ rl.on('line', function (line) {
         db.account.create({
                 _data: {
                     username: line.split('----')[0],
-                    password: line.split('----')[1]
+                    password: line.split('----')[1],
+                    pc_cookie:line.split('----')[3]
                 },
                 created: Date.now()
             }

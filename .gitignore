@@ -33,5 +33,5 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
-jd_account.txt
+test/*.txt
 # Created by .ignore support plugin (hsz.mobi)

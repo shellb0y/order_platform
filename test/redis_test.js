@@ -19,18 +19,21 @@ var client = redis.createClient();
 //client.quit();
 
 //client.set('order_platform:phone_charge:trade_no:1111','11111');
-client.hgetall('order_platform:phone_charge:trade_no:20161211203604436HPQNA00001',(err,data)=>{
-    console.log(data);
-});
+//client.hgetall('order_platform:phone_charge:trade_no:20161211203604436HPQNA00001',(err,data)=>{
+//    console.log(data);
+//});
 //client.del('order_platform:phone_charge:trade_no:1111');
 //client.exists('order_platform:phone_charge:trade_no:1111',(err,data)=>{
 //    console.log(data);
 //});
-client.quit();
 
-//redis.client.incr('order_platform:trade_index1',(err,data)=>{
-//    console.log(data);
-//});
+(async()=>{
+    console.log(await redis.incrSync(client));
+    client.quit();
+})();
+
+
+
 
 //redis.client.set('order_platform:trade_index',0,(err,data)=>{
 //    if(!err)
