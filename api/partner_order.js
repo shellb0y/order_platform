@@ -160,7 +160,7 @@ router.get('/order', async function (ctx, next) {
         };
 
         redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
-        redis_client.expire(`order_platform:phone_charge:trade_no:${trade_no}`, 24 * 60 * 60);
+        redis_client.expire(`order_platform:phone_charge:trade_no:${trade_no}`, 11 * 60 * 60);
         redis_client.lpush('order_platform:phone_charge:order', trade_no);
         redis_client.quit();
 

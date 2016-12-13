@@ -18,14 +18,14 @@ var logger = require('../logger');
 //    console.log(trade_no);
 //})();
 
-logger.t("trace");
-logger.d("debug");
-logger.i("info");
-logger.w("warn");
-logger.e('test error');
-logger.e(new Error('test error'));
+//logger.t("trace");
+//logger.d("debug");
+//logger.i("info");
+//logger.w("warn");
+//logger.e('test error');
+//logger.e(new Error('test error'));
 
-
+console.log("\"付款锁定中\"".replace(/"/g,""));
 //(async function () {
 //    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','11') where order_id=1`);
 //    console.log(ret[0].affectedRows);

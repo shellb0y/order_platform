@@ -48,9 +48,16 @@ router.post('/order', async (ctx, next)=> {
 });
 
 router.get('/order/:id', async (ctx, next)=> {
-    var order = await db.order.findById(ctx.params.id);
-    if (order) {
-        ctx.body = JSON.parse(order._data).status;
+    var data = await db.sequelize.query(`select _data->'$.status' as status from order_ where _data->'$.pay_task_id' = '${ctx.params.id}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    if (data.length > 0) {
+        ctx.body = data[0].status.replace(/"/ig,'');
     } else {
         ctx.body = '';
     }
