@@ -112,6 +112,12 @@ router.get('/order', async function (ctx, next) {
         return;
     }
 
+    if(!(/^1[34578]\d{9}$/.test(mobile))){
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'mobile invalid'}};
+        ctx.body = ret;
+        return;
+    }
+
     if (!(parseFloat(amount) == 100)) {
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'amount not support'}};
         ctx.body = ret;

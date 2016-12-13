@@ -11,18 +11,18 @@ require('../string_ex');
 router.post('/order', async (ctx, next)=> {
 
     if (ctx.request.body) {
-        if (ctx.request.body.id) {
+        if (ctx.request.body.order_id) {
             db.order.update({
                 _data: ctx.request.body.data,
                 modified: Date.now()
-            }, {where: {order_id: ctx.request.body.id}}).catch((err)=> {
+            }, {where: {order_id: ctx.request.body.order_id}}).catch((err)=> {
                 if (err instanceof Error)
                     throw err;
                 else
                     throw new Error(err);
             });
 
-            if (ctx.request.body.data.status == '下单成功,等待支付') {
+            if (ctx.request.body.data.status == '下单成功') {
                 db.sequelize.query(`update account_ set _data=JSON_INSERT(_data,'$.order_90_5_count',1)
                 where account_id=${ctx.request.body.data.account.account_id}`).catch((err)=> {
                     if (err instanceof Error)
@@ -30,6 +30,10 @@ router.post('/order', async (ctx, next)=> {
                     else
                         throw new Error(err);
                 });
+            }else if(ctx.request.body.data.status == '下单失败' || ctx.request.body.data.status == '下单异常'){
+                var redis_client = redis.createClient();
+                redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
+                redis_client.quit();
             }
 
             ctx.body = ctx.request.body.id;
@@ -47,6 +51,24 @@ router.post('/order', async (ctx, next)=> {
     }
 });
 
+router.get('/order/paysuccess', async(ctx, next)=> {
+    var orders = await db.sequelize.query(`select _data as data from order_ where _data->'$.status' = '付款成功'`, {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    ctx.body = orders;
+
+    //if (orders.length > 0) {
+    //    ctx.body = orders;
+    //} else {
+    //    ctx.body = {};
+    //}
+
+});
+
 router.get('/order/:id', async (ctx, next)=> {
     var data = await db.sequelize.query(`select _data->'$.status' as status from order_ where _data->'$.pay_task_id' = '${ctx.params.id}'`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
@@ -57,21 +79,22 @@ router.get('/order/:id', async (ctx, next)=> {
     });
 
     if (data.length > 0) {
-        ctx.body = data[0].status.replace(/"/ig,'');
+        ctx.body = data[0].status.replace(/"/ig, '');
     } else {
         ctx.body = '';
     }
 });
 
-
 router.post('/order/status', async (ctx, next)=> {
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${decodeURI(ctx.request.body.status)}')
+    var callback_status = ctx.request.body.callback_status || '';
+    var ret = await db.sequelize.query(`update order_ set _data=JSON_SET(_data,'$.status','${decodeURI(ctx.request.body.status)}','$.callback_status','${callback_status}')
     where _data->'$.pay_task_id'='${ctx.request.body.order_id}'`).catch((err)=> {
         if (err instanceof Error)
             throw err;
         else
             throw new Error(err);
     });
+
     //ctx.body = ret[0].affectedRows;
     ctx.body = 'success';
     //[OkPacket {

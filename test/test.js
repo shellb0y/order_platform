@@ -25,7 +25,6 @@ var logger = require('../logger');
 //logger.e('test error');
 //logger.e(new Error('test error'));
 
-console.log("\"付款锁定中\"".replace(/"/g,""));
 //(async function () {
 //    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','11') where order_id=1`);
 //    console.log(ret[0].affectedRows);
@@ -62,6 +61,6 @@ console.log("\"付款锁定中\"".replace(/"/g,""));
 //
 //})();
 
-
+console.log(new Date(1483056000000));
 
 
