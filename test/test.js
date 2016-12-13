@@ -61,6 +61,4 @@ var logger = require('../logger');
 //
 //})();
 
-console.log(new Date(1483056000000));
-
 

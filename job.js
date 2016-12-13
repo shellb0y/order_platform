@@ -9,17 +9,17 @@ var crypto = require('crypto');
 var log = require('./logger');
 
 module.exports = function () {
-    new cronJob('0 0 0 * * *', function () {
-        var client = redis.createClient();
-        client.set('order_platform:trade_index', 0, (err, data)=> {
-            if (!err)
-                console.log(data);
-            else
-                console.error(err);
-
-            client.quit();
-        });
-    }, null, true);
+    //new cronJob('0 0 0 * * *', function () {
+    //    var client = redis.createClient();
+    //    client.set('order_platform:trade_index', 0, (err, data)=> {
+    //        if (!err)
+    //            console.log(data);
+    //        else
+    //            console.error(err);
+    //
+    //        client.quit();
+    //    });
+    //}, null, true);
 };
 
 

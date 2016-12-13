@@ -26,14 +26,15 @@ exports.incrSync = async (client)=> {
         });
     });
 
-    if(index == 1){
-        //client.expire(key,)
+    if (index == 1) {
+        var date = new Date();
+        client.expire('order_platform:trade_index', (86400 - (date.getHours() * 3600 + date.getMinutes() * 60)) / 60);
     }
 
     return index;
 };
 
-exports.existSync = async (client,key)=> {
+exports.existSync = async (client, key)=> {
     return await new Promise((resovle, reject)=> {
         client.exists(key, (err, data)=> {
             if (err)
