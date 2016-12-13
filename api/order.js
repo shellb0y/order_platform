@@ -58,8 +58,15 @@ router.get('/order/:id', async (ctx, next)=> {
 
 
 router.post('/order/status', async (ctx, next)=> {
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${ctx.request.body.status}') where order_id=${ctx.request.body.order_id}`);
-    ctx.body = ret[0].affectedRows;
+    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${decodeURI(ctx.request.body.status)}')
+    where order_id=${ctx.request.body.order_id}`).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+    //ctx.body = ret[0].affectedRows;
+    ctx.body = 'success';
     //[OkPacket {
     //    fieldCount: 0,
     //    affectedRows: 1,
