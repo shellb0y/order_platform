@@ -8,6 +8,7 @@ const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')();
 const logger = require('koa-logger');
+const compress = require('koa-compress');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -18,8 +19,12 @@ const account_api = require('./api/account');
 const partner_order_api_test = require('./api/partner_order_test');
 const __static = require('koa-static');
 
+//app.use(async (ctx, next)=> {
+//    await compress(ctx, next);
+//});
 
 // middlewares
+app.use(convert(compress()));
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));

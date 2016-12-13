@@ -28,7 +28,7 @@ exports.incrSync = async (client)=> {
 
     if (index == 1) {
         var date = new Date();
-        client.expire('order_platform:trade_index', (86400 - (date.getHours() * 3600 + date.getMinutes() * 60)) / 60);
+        client.expire('order_platform:trade_index', 86400 - (date.getHours() * 3600 + date.getMinutes() * 60));
     }
 
     return index;

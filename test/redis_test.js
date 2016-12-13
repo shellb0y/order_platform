@@ -27,17 +27,19 @@ var client = redis.createClient();
 //    console.log(data);
 //});
 
-//(async()=>{
-//    console.log(await redis.incrSync(client));
-//    client.quit();
-//})();
+(async()=>{
+    console.log(await redis.incrSync(client));
+    client.quit();
+})();
 
-var date = new Date();
-client.expire('order_platform:trade_index', (86400 - (date.getHours() * 3600 + date.getMinutes() * 60)) / 60,
-    function (err, data) {
-        console.log(data);
-    });
-client.quit();
+//var date = new Date();
+//client.expire('order_platform:trade_index', (86400 - (date.getHours() * 3600 + date.getMinutes() * 60)) / 60,
+//    function (err, data) {
+//        console.log(data);
+//    });
+//client.quit();
+
+
 
 
 //redis.client.set('order_platform:trade_index',0,(err,data)=>{
