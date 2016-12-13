@@ -59,7 +59,7 @@ router.get('/order/:id', async (ctx, next)=> {
 
 router.post('/order/status', async (ctx, next)=> {
     var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','${decodeURI(ctx.request.body.status)}')
-    where order_id=${ctx.request.body.order_id}`).catch((err)=> {
+    where _data->'$.pay_task_id'='${ctx.request.body.order_id}'`).catch((err)=> {
         if (err instanceof Error)
             throw err;
         else
