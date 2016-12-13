@@ -37,7 +37,7 @@ function md5(text) {
  * curl -i http://115.28.102.142:8000/v1/api/order?amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
  *
  * @apiExample Callback(GET):
- * curl -i http://xxxxxx?partner_order_id={商户订单号}&trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{partner_order_id}{secret(密钥)}{success}{t}{trade_no})
+ * curl -i http://xxxxxx?trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{secret(密钥)}{success}{t}{trade_no})
  * HTTP/1.1 200
  * {
  *   "success":1(成功)|0(失败),
