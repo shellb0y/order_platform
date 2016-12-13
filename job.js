@@ -46,5 +46,5 @@ module.exports = function () {
             var url = `${decodeURI(_o.callback)}?partner_order_id=${_o.partner_order_id}&trade_no=${_o.trade_no}&amount=${_o.partner_price}&success=1&t=${t}&sign=${sign}`;
             request.get(url).catch((e)=>console.log(e));
         });
-    },3000);
+    },5000);
 };
