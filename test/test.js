@@ -5,6 +5,8 @@ var utility = require('../utility');
 require('../date_ex');
 require('../string_ex');
 var db = require('../models/db');
+var request = require('request-promise');
+var crypto = require('crypto');
 //var redis = require("../redis");
 
 //(async function () {
@@ -21,6 +23,36 @@ var db = require('../models/db');
 //    console.log(ret[0].affectedRows);
 //})();
 
+(async function () {
+    var order = await db.sequelize.query(`select _data from order_ where _data->'$.status' = '下单成功,等待支付'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+
+    //console.log(order);
+    order.forEach(async (o)=> {
+        var _o = JSON.parse(o._data);
+        //console.log(_o);
+        //console.log(_o.partner_price);
+        //console.log(_o.partner_order_id);
+        //console.log(_o.callback);
+        //console.log(_o.trade_no);
+        //console.log(JSON.parse(_o.partner).secret);
+
+        t = Date.now();
+        var _target = `${_o.partner_price}${_o.partner_order_id}${JSON.parse(_o.partner).secret}1${t}${_o.trade_no})`;
+        console.log('callback target:' + _target);
+        sign = crypto.createHash('md5').update(_target).digest('hex');
+        console.log('callback sign:' + sign);
+        var url = `${decodeURI(_o.callback)}?partner_order_id=${_o.partner_order_id}&trade_no=${_o.trade_no}&amount=${_o.partner_price}&success=1&t=${t}&sign=${sign}`;
+        request.get(url).catch((e)=>console.log(e));
+    });
+
+})();
 
 
 

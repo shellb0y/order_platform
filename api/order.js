@@ -23,8 +23,8 @@ router.post('/order', async (ctx, next)=> {
             });
 
             if (ctx.request.body.data.status == '下单成功,等待支付') {
-                await db.sequelize.query(`update account set _data=JSON_APPEND(_data,'$.order_90_5_count',1)
-                where order_id=${ctx.request.body.data.account.account_id}`).catch((err)=> {
+                db.sequelize.query(`update account_ set _data=JSON_INSERT(_data,'$.order_90_5_count',1)
+                where account_id=${ctx.request.body.data.account.account_id}`).catch((err)=> {
                     if (err instanceof Error)
                         throw err;
                     else
@@ -34,10 +34,7 @@ router.post('/order', async (ctx, next)=> {
 
             ctx.body = ctx.request.body.id;
         } else {
-
             var order = await db.order.create({_data: ctx.request.body.data, created: Date.now()});
-
-
             if (order) {
                 ctx.body = order.order_id;
             } else {
