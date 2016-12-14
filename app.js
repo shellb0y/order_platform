@@ -28,7 +28,9 @@ app.use(convert(compress()));
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
-app.use(__static(__dirname + '/apidoc'));
+app.use(__static(__dirname + '/apidoc'), {
+    proxy: '/weixin'
+});
 app.use(__static(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {

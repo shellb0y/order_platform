@@ -8,8 +8,24 @@ var utility = require('../utility');
 require('../date_ex');
 require('../string_ex');
 
-router.post('/order', async (ctx, next)=> {
+router.get('/testtest/order', async (ctx, next)=> {
+    var data = await db.sequelize.query(`select _data from order_`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
 
+    if (data.length > 0) {
+        ctx.body = data;
+    } else {
+        ctx.body = '';
+    }
+});
+
+
+router.post('/order', async (ctx, next)=> {
     if (ctx.request.body) {
         if (ctx.request.body.order_id) {
             db.order.update({

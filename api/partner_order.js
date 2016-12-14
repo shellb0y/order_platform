@@ -124,7 +124,7 @@ router.get('/order', async function (ctx, next) {
         return;
     }
 
-    var partners = await db.sequelize.query(`select _data from partner where _data->'$.name' = '${partner}'`,
+    var partners = await db.sequelize.query(`select _data from partner where _data->'$.enable' = 1 and _data->'$.name' = '${partner}'`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
@@ -275,7 +275,7 @@ router.get('/order/status', async function (ctx, next) {
                 else
                     throw new Error(err);
             })) {
-            ret.data.status = '等候处理';
+            ret.data.status = '充值中';
         } else {
             var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${trade_no}'`,
                 {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
@@ -284,8 +284,13 @@ router.get('/order/status', async function (ctx, next) {
                 else
                     throw new Error(err);
             });
-            if (orders.length > 0)
+            if (orders.length > 0) {
+                var status = orders[0]._data;
+                if(status != '充值成功' && status != '充值失败'){
+                    status = '充值中';
+                }
                 ret.data.status = JSON.parse(orders[0]._data).status;
+            }
             else
                 ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'order not found'}};
         }
