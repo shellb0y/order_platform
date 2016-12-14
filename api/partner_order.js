@@ -23,7 +23,7 @@ function md5(text) {
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 提交订单,注意签名和传输时callback需要进行url编码.
+ * @apiDescription 提交订单
  *
  * @apiParam {String}   id            商户订单号
  * @apiParam {String}   mobile        待充值的手机号
@@ -31,10 +31,10 @@ function md5(text) {
  * @apiParam {String}   partner       商户号
  * @apiParam {String}   callback      商户回调地址
  * @apiParam {Number}   t             时间戳
- * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({amount}{urlencode(callback)}{id}{mobile}{partner}{secret(密钥)}{t})
+ * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({amount}{callback}{id}{mobile}{partner}{secret(密钥)}{t})
  *
  * @apiExample Example usage:
- * curl -i http://115.28.102.142:8000/v1/api/order?amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
+ * curl -i http://139.199.65.115:3000/v1/api/order?amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
  *
  * @apiExample Callback(GET):
  * curl -i http://xxxxxx?trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{secret(密钥)}{success}{t}{trade_no})
@@ -197,13 +197,13 @@ router.get('/order', async function (ctx, next) {
  * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({partner}{secret(密钥)}{t}{trade_no})
  *
  * @apiExample Example usage:
- * curl -i http://115.28.102.142:8000/v1/api/order/status?trade_no={trade_no}&t={t}&sign={sign}&partner={partner}
+ * curl -i http://139.199.65.115:3000/v1/api/order/status?trade_no={trade_no}&t={t}&sign={sign}&partner={partner}
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "success": true,
- *       "data":{"status":"等待处理|下单成功|下单失败|支付成功|支付失败"}
+ *       "data":{"status":"充值中|充值成功|充值失败"}
  *     }
  *
  * @apiError DATA_INVALID   parameter error.
@@ -319,7 +319,7 @@ router.get('/order/status', async function (ctx, next) {
  * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({partner}{secret(密钥)}{t})
  *
  * @apiExample Example usage:
- * curl -i http://115.28.102.142:8000/v1/api/partner/balance?partner={partner}&t={t}&sign={sign}
+ * curl -i http://139.199.65.115:3000/v1/api/partner/balance?partner={partner}&t={t}&sign={sign}
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
