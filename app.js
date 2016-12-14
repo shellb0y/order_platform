@@ -18,19 +18,15 @@ const partner_api = require('./api/partner');
 const account_api = require('./api/account');
 const partner_order_api_test = require('./api/partner_order_test');
 const __static = require('koa-static');
-
-//app.use(async (ctx, next)=> {
-//    await compress(ctx, next);
-//});
+const __static_folder = require('koa-static-folder');
 
 // middlewares
 app.use(convert(compress()));
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
-app.use(__static(__dirname + '/apidoc'), {
-    proxy: '/weixin'
-});
+//app.use(__static(__dirname + '/apidoc'));
+app.use(__static_folder('./apidoc'));
 app.use(__static(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {

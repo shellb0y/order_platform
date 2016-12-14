@@ -46,7 +46,7 @@ router.post('/order', async (ctx, next)=> {
                     else
                         throw new Error(err);
                 });
-            }else if(ctx.request.body.data.status == '下单失败' || ctx.request.body.data.status == '下单异常'){
+            } else if (ctx.request.body.data.status == '下单失败' || ctx.request.body.data.status == '下单异常') {
                 var redis_client = redis.createClient();
                 redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
                 redis_client.quit();
@@ -68,7 +68,7 @@ router.post('/order', async (ctx, next)=> {
 });
 
 router.get('/order/paysuccess', async(ctx, next)=> {
-    var orders = await db.sequelize.query(`select _data as data from order_ where _data->'$.status' = '付款成功'`, {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+    var orders = await db.sequelize.query(`select _data as data from order_ where _data->'$.status' = '充值成功'`, {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
         else
@@ -86,7 +86,7 @@ router.get('/order/paysuccess', async(ctx, next)=> {
 });
 
 router.get('/order/:id', async (ctx, next)=> {
-    var data = await db.sequelize.query(`select _data->'$.status' as status from order_ where _data->'$.pay_task_id' = '${ctx.params.id}'`,
+    var data = await db.sequelize.query(`select _data->'$.status' as status from order_ where _data->'$.pay_task_id' = '${ctx.params.id}' or _data->'$.trade_no'='${ctx.params.id}'`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
