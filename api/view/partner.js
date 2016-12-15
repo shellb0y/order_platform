@@ -8,7 +8,7 @@ var db = require('../../models/db');
  * @api {GET} /partner 获取商户
  * @apiName GET_PARTNER
  * @apiVersion 1.0.0
- * @apiGroup 商户接口
+ * @apiGroup Partner
  *
  * @apiDescription 获取所有商户
  *
@@ -19,8 +19,15 @@ var db = require('../../models/db');
  * @apiSuccess {FLOAT} balance 余额
  *
  * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {"code": "AA", "name": "yichongbao_1213", "enable": 1, "secret": "d!GqE$Sz", "balance": 9999999}
+ *   HTTP/1.1 200 OK
+ *   [
+ *        {
+ *          "_data": "{\"code\": \"AA\", \"name\": \"yichongbao_1213\", \"enable\": 1, \"secret\": \"d!GqE$Sz\", \"balance\": 9999999}"
+ *        },
+ *        {
+ *          "_data": "{\"code\": \"AB\", \"name\": \"huifuxinxi\", \"enable\": 1, \"secret\": \"3!hw3nAP\", \"balance\": 9999999}"
+ *        }
+ *   ]
  * */
 router.get('/', async(ctx, next)=> {
     var partners = await db.sequelize.query(`select _data from partner`,
@@ -30,9 +37,7 @@ router.get('/', async(ctx, next)=> {
         else
             throw new Error(err);
     });
-
-    var a = {"code": "AA", "name": "yichongbao_1213", "enable": 1, "secret": "d!GqE$Sz", "balance": 9999999};
-
+    console.log(partners);
     ctx.body = partners;
 });
 
