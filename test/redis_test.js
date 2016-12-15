@@ -27,10 +27,10 @@ var client = redis.createClient();
 //    console.log(data);
 //});
 
-(async()=>{
-    console.log(await redis.incrSync(client));
-    client.quit();
-})();
+//(async()=>{
+//    console.log(await redis.incrSync(client));
+//    client.quit();
+//})();
 
 //var date = new Date();
 //client.expire('order_platform:trade_index', (86400 - (date.getHours() * 3600 + date.getMinutes() * 60)) / 60,
@@ -39,8 +39,10 @@ var client = redis.createClient();
 //    });
 //client.quit();
 
-
-
+client.lpush('order_platform:phone_charge:order','20161215065138422LPCOA00002',(err,data)=>{
+    console.log(data);
+});
+client.quit();
 
 //redis.client.set('order_platform:trade_index',0,(err,data)=>{
 //    if(!err)

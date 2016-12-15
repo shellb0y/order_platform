@@ -3,7 +3,7 @@
  */
 'use strict'
 var router = require('koa-router')();
-var db = require('../models/db');
+var db = require('../../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
 

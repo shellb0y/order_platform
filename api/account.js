@@ -29,10 +29,11 @@ router.get('/jd/phone_charge', async (ctx, next)=> {
 });
 
 router.post('/', async(ctx, next)=> {
+    console.log(ctx.request.body);
     await db.account.update({
-        _data: ctx.request.body.data,
+        _data: ctx.request.body,
         modified: Date.now()
-    }, {where: {account_id: ctx.request.body.id}}).catch((err)=> {
+    }, {where: {account_id: ctx.request.body.account_id}}).catch((err)=> {
         if (err instanceof Error)
             throw err;
         else

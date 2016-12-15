@@ -61,4 +61,11 @@ var logger = require('../logger');
 //
 //})();
 
+(async function () {
+    var order_id = await db.sequelize.query(`select order_id from order_ where _data->'$.trade_no'='20161215023325153UROAA00001'`,
+        {type: db.sequelize.QueryTypes.SELECT});
+    console.log(order_id[0].order_id);
+})();
+
+
 

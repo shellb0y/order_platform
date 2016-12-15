@@ -8,22 +8,6 @@ var utility = require('../utility');
 require('../date_ex');
 require('../string_ex');
 
-router.get('/testtest/order', async (ctx, next)=> {
-    var data = await db.sequelize.query(`select _data from order_`,
-        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
-        if (err instanceof Error)
-            throw err;
-        else
-            throw new Error(err);
-    });
-
-    if (data.length > 0) {
-        ctx.body = data;
-    } else {
-        ctx.body = '';
-    }
-});
-
 
 router.post('/order', async (ctx, next)=> {
     if (ctx.request.body) {
@@ -38,7 +22,9 @@ router.post('/order', async (ctx, next)=> {
                     throw new Error(err);
             });
 
-            if (ctx.request.body.data.status == '下单成功') {
+            var status = ctx.request.body.data.status;
+
+            if (status == '下单成功') {
                 db.sequelize.query(`update account_ set _data=JSON_INSERT(_data,'$.order_90_5_count',1)
                 where account_id=${ctx.request.body.data.account.account_id}`).catch((err)=> {
                     if (err instanceof Error)
@@ -46,8 +32,18 @@ router.post('/order', async (ctx, next)=> {
                     else
                         throw new Error(err);
                 });
-            } else if (ctx.request.body.data.status == '下单失败' || ctx.request.body.data.status == '下单异常') {
+            } else if (status == '下单失败' || status == '下单异常' || status == '没有优惠券') {
                 var redis_client = redis.createClient();
+                var trade = await redis.hgetallSync(redis_client,`order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`);
+                if (!trade.order_id) {
+                    var order_id = await db.sequelize.query(`select order_id from order_ where _data->'$.trade_no'='${ctx.request.body.data.trade_no}'`,
+                        {type: db.sequelize.QueryTypes.SELECT});
+                    console.log(order_id);
+                    if (order_id) {
+                        trade.order_id = order_id[0].order_id;
+                        redis_client.hmset(`order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`, trade);
+                    }
+                }
                 redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
                 redis_client.quit();
             }

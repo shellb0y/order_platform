@@ -3,13 +3,13 @@
  */
 'use strict';
 var router = require('koa-router')();
-var db = require('../models/db');
+var db = require('../../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
-var redis = require("../redis");
-var utility = require('../utility');
-require('../date_ex');
-require('../string_ex');
+var redis = require("../../redis");
+var utility = require('../../utility');
+require('../../date_ex');
+require('../../string_ex');
 
 var debug = 1;
 
@@ -17,6 +17,7 @@ function md5(text) {
     return crypto.createHash('md5').update(text).digest('hex');
 }
 
+//@apiIgnore
 /**
  * @api {GET} /order 提交订单
  * @apiName PostOrder
@@ -155,7 +156,8 @@ router.get('/order', async function (ctx, next) {
         var date = new Date().format('yyyyMMddhhmmssS');
         var random = utility.random_letter(4).toUpperCase();
         var index = await redis.incrSync(redis_client);
-        var trade_no = `${date}${random}A${(index+'').padLeft(5, '0')}`;
+        var code = _partner.code;
+        var trade_no = `${date}${random}${code}A${(index+'').padLeft(5, '0')}`;
         var order = {
             'trade_no':trade_no,
             'mobile': mobile,

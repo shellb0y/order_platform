@@ -1,0 +1,2 @@
+apidoc  -i api/open/ -o doc/open_api -t api_doc_template/ --debug
+apidoc  -i api/view/ -o doc/view_api -t api_doc_template/ --debug

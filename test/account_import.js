@@ -6,7 +6,7 @@ var readline = require('readline'),
     fs = require('fs');
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('jd_account_2.txt'),
+    input: fs.createReadStream('jd_account_3.txt'),
     output: process.stdout,
     terminal: false
 });
@@ -17,7 +17,8 @@ rl.on('line', function (line) {
                 _data: {
                     username: line.split('----')[0],
                     password: line.split('----')[1],
-                    pc_cookie:line.split('----')[3]
+                    pc_cookie:line.split('----')[3],
+                    source:'xiaoafei'
                 },
                 created: Date.now()
             }

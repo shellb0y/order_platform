@@ -13,10 +13,13 @@ const compress = require('koa-compress');
 const index = require('./routes/index');
 const users = require('./routes/users');
 const order = require('./api/order');
-const partner_order_api = require('./api/partner_order');
+const partner_order_api = require('./api/open/partner_order');
 const partner_api = require('./api/partner');
 const account_api = require('./api/account');
-const partner_order_api_test = require('./api/partner_order_test');
+const view_account_api = require('./api/view/account');
+const view_order_api = require('./api/view/order');
+const view_partner_api = require('./api/view/partner');
+const partner_order_api_test = require('./api/open/partner_order_test');
 const __static = require('koa-static');
 const __static_folder = require('koa-static-folder');
 
@@ -26,7 +29,7 @@ app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
 //app.use(__static(__dirname + '/apidoc'));
-app.use(__static_folder('./apidoc'));
+app.use(__static_folder('./doc'));
 app.use(__static(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
@@ -48,6 +51,9 @@ router.use('/test/api', partner_order_api_test.routes(), partner_order_api_test.
 router.use('/api', order.routes(), order.allowedMethods());
 router.use('/api/partner', partner_api.routes(), partner_api.allowedMethods());
 router.use('/api/account', account_api.routes(), account_api.allowedMethods());
+router.use('/api/view/account', view_account_api.routes(), view_account_api.allowedMethods());
+router.use('/api/view/order', view_order_api.routes(), view_order_api.allowedMethods());
+router.use('/api/view/partner', view_partner_api.routes(), view_partner_api.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
