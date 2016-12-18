@@ -34,7 +34,7 @@ router.post('/order', async (ctx, next)=> {
                 });
             } else if (status == '下单失败' || status == '下单异常' || status == '没有优惠券') {
                 var redis_client = redis.createClient();
-                var trade = await redis.hgetallSync(redis_client,`order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`);
+                var trade = await redis.hgetallSync(redis_client, `order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`);
                 if (!trade.order_id) {
                     var order_id = await db.sequelize.query(`select order_id from order_ where _data->'$.trade_no'='${ctx.request.body.data.trade_no}'`,
                         {type: db.sequelize.QueryTypes.SELECT});
@@ -98,8 +98,7 @@ router.get('/order/:id', async (ctx, next)=> {
 });
 
 router.post('/order/status', async (ctx, next)=> {
-    var callback_status = ctx.request.body.callback_status || '';
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_SET(_data,'$.status','${decodeURI(ctx.request.body.status)}','$.callback_status','${callback_status}')
+    var ret = await db.sequelize.query(`update order_ set _data=JSON_SET(_data,'$.status','${decodeURI(ctx.request.body.status)}','$.pay_callback_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
     where _data->'$.pay_task_id'='${ctx.request.body.order_id}'`).catch((err)=> {
         if (err instanceof Error)
             throw err;
@@ -129,6 +128,22 @@ router.post('/order/status', async (ctx, next)=> {
     //    protocol41: true,
     //    changedRows: 0
     //}]
+});
+
+router.post('/order/callback/status', async (ctx, next)=> {
+    var ret = await db.sequelize.query(`update order_ set _data=JSON_SET(_data,
+    '$.status','${decodeURI(ctx.request.body.status)}',
+    '$.callback_status','${ctx.request.body.callback_status}',
+    '$.order_callback_time','${ctx.request.body.order_callback_time}',
+    '$.order_callback_complete_time','${ctx.request.body.order_callback_complete_time}')
+     where _data->'$.pay_task_id'='${ctx.request.body.order_id}'`).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    ctx.body = 'success';
 });
 
 module.exports = router;

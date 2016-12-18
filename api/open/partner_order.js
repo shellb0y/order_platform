@@ -164,7 +164,8 @@ router.get('/order', async function (ctx, next) {
             'amount': amount,
             'callback': callback,
             'partner_order_id': id,
-            'partner': JSON.stringify(_partner)
+            'partner': JSON.stringify(_partner),
+            'order_request_time':new Date().format('yyyy-MM-dd hh:mm:ss')
         };
 
         redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
