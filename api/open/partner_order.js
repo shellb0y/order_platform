@@ -113,7 +113,7 @@ router.get('/order', async function (ctx, next) {
         return;
     }
 
-    if(!(/^1[34578]\d{9}$/.test(mobile))){
+    if (!(/^1[34578]\d{9}$/.test(mobile))) {
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'mobile invalid'}};
         ctx.body = ret;
         return;
@@ -157,15 +157,22 @@ router.get('/order', async function (ctx, next) {
         var random = utility.random_letter(4).toUpperCase();
         var index = await redis.incrSync(redis_client);
         var code = _partner.code;
-        var trade_no = `${date}${random}${code}A${(index+'').padLeft(5, '0')}`;
+        var trade_no = `${date}${random}${code}A${(index + '').padLeft(5, '0')}`;
+        var order_timeout = 0;
+
+        if (_partner.order_timeout) {
+            order_timeout = new Date() + _partner.order_timeout * 1000;
+        }
+
         var order = {
-            'trade_no':trade_no,
+            'trade_no': trade_no,
             'mobile': mobile,
             'amount': amount,
             'callback': callback,
             'partner_order_id': id,
             'partner': JSON.stringify(_partner),
-            'order_request_time':new Date().format('yyyy-MM-dd hh:mm:ss')
+            'order_request_time': new Date().format('yyyy-MM-dd hh:mm:ss'),
+            'order_timeout': order_timeout
         };
 
         redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
@@ -270,6 +277,7 @@ router.get('/order/status', async function (ctx, next) {
     var _sign = md5(data);
 
     if (_sign == sign) {
+
         ret = {'success': true, 'data': {'status': ''}};
         var redis_client = redis.createClient();
         if (await redis.existSync(redis_client, `order_platform:phone_charge:trade_no:${trade_no}`).catch(err=> {
@@ -289,7 +297,7 @@ router.get('/order/status', async function (ctx, next) {
             });
             if (orders.length > 0) {
                 var status = orders[0]._data;
-                if(status != '充值成功' && status != '充值失败'){
+                if (status != '充值成功' && status != '充值失败') {
                     status = '充值中';
                 }
                 ret.data.status = JSON.parse(orders[0]._data).status;

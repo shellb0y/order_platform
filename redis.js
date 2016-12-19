@@ -4,6 +4,17 @@
 'use strict';
 var redis = require('redis');
 
+exports.brpopSync = async function(client,queueName,timeout){
+    return await new Promise((resovle, reject)=> {
+        client.brpop(queueName,timeout, (err, data)=> {
+            if (err)
+                reject(err);
+            else
+                resovle(data);
+        });
+    });
+};
+
 exports.hgetallSync = async function (client, key) {
     return await new Promise((resovle, reject)=> {
         client.hgetall(key, (err, data)=> {

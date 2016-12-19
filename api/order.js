@@ -34,17 +34,23 @@ router.post('/order', async (ctx, next)=> {
                 });
             } else if (status == '下单失败' || status == '下单异常' || status == '没有优惠券') {
                 var redis_client = redis.createClient();
-                var trade = await redis.hgetallSync(redis_client, `order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`);
-                if (!trade.order_id) {
-                    var order_id = await db.sequelize.query(`select order_id from order_ where _data->'$.trade_no'='${ctx.request.body.data.trade_no}'`,
-                        {type: db.sequelize.QueryTypes.SELECT});
-                    console.log(order_id);
-                    if (order_id) {
-                        trade.order_id = order_id[0].order_id;
-                        redis_client.hmset(`order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`, trade);
+                var order_timeout = ctx.request.body.data.partner.order_timeout;
+                if (order_timeout && order_timeout < new Date().getTime()) {
+                    var trade = await redis.hgetallSync(redis_client, `order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`);
+                    if (!trade.order_id) {
+                        var order_id = await db.sequelize.query(`select order_id from order_ where _data->'$.trade_no'='${ctx.request.body.data.trade_no}'`,
+                            {type: db.sequelize.QueryTypes.SELECT});
+                        console.log(order_id);
+                        if (order_id) {
+                            trade.order_id = order_id[0].order_id;
+                            redis_client.hmset(`order_platform:phone_charge:trade_no:${ctx.request.body.data.trade_no}`, trade);
+                        }
                     }
+                    redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
+                } else {
+                    redis_client.lpush('order_platform:phone_charge:order_faild', ctx.request.body.data.trade_no);
                 }
-                redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
+
                 redis_client.quit();
             }
 
@@ -63,25 +69,38 @@ router.post('/order', async (ctx, next)=> {
     }
 });
 
-router.get('/order/paysuccess', async(ctx, next)=> {
-    var orders = await db.sequelize.query(`select _data as data from order_ where _data->'$.status' = '充值成功'`, {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+//router.get('/order/paysuccess', async(ctx, next)=> {
+//    var orders = await db.sequelize.query(`select _data as data from order_ where _data->'$.status' = '付款成功' or _data->'$.status='已付款待确认'`,
+//        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+//        if (err instanceof Error)
+//            throw err;
+//        else
+//            throw new Error(err);
+//    });
+//
+//    ctx.body = orders;
+//
+//    //if (orders.length > 0) {
+//    //    ctx.body = orders;
+//    //} else {
+//    //    ctx.body = {};
+//    //}
+//
+//});
+
+router.get('/order/:id', async (ctx, next)=> {
+    var data = await db.sequelize.query(`select _data from order_ where _data->'$.pay_task_id' = '${ctx.params.id}' or _data->'$.trade_no'='${ctx.params.id}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
         else
             throw new Error(err);
     });
 
-    ctx.body = orders;
-
-    //if (orders.length > 0) {
-    //    ctx.body = orders;
-    //} else {
-    //    ctx.body = {};
-    //}
-
+    ctx.body = data;
 });
 
-router.get('/order/:id', async (ctx, next)=> {
+router.get('/order/status/:id', async (ctx, next)=> {
     var data = await db.sequelize.query(`select _data->'$.status' as status from order_ where _data->'$.pay_task_id' = '${ctx.params.id}' or _data->'$.trade_no'='${ctx.params.id}'`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
@@ -105,6 +124,10 @@ router.post('/order/status', async (ctx, next)=> {
         else
             throw new Error(err);
     });
+
+    if (ctx.request.body.status == '付款成功' || ctx.request.body.status == '已付款待确认') {
+        redis.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
+    }
 
     //ctx.body = ret[0].affectedRows;
     ctx.body = 'success';
