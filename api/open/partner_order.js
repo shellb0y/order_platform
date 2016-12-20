@@ -161,7 +161,7 @@ router.get('/order', async function (ctx, next) {
         var order_timeout = 0;
 
         if (_partner.order_timeout) {
-            order_timeout = new Date() + _partner.order_timeout * 1000;
+            order_timeout = new Date().getTime() + _partner.order_timeout * 1000;
         }
 
         var order = {

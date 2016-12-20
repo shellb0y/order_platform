@@ -46,7 +46,7 @@ exports.d = (key, message, program)=> {
 
 exports.e = (key, message, program)=> {
     console.error(message);
-    if (message.stack)
+    if (message && message.stack)
         send2Server("ERROR", key, message.stack, program);
     else
         send2Server("ERROR", key, message, program);

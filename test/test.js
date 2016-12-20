@@ -67,6 +67,32 @@ var logger = require('../logger');
 //    console.log(order_id[0].order_id);
 //})();
 
+var order = {
+    'partner_price': 98,
+    'trade_no': '5465456456',
+    'success': 1,
+    'callback': 'http://192.168.3.113:3000/v1/api/callback'
+};
+var partner = {'secret': '21321321'};
+var t = new Date();
+request({
+    uri: order.callback,
+    qs: {
+        'partner_price': order.partner_price,
+        'success': order.success,
+        't': t.getTime(),
+        'trade_no': order.trade_no,
+        'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
+    },json: true
+}).then((resp)=> {
+    if(resp && resp.success){
+        console.log('yes');
+    }
+});
+
+//request.get('http://192.168.3.113:3000/v1/api/callback',function(err,respo){
+//   console.log(respo);
+//});
 
 
 

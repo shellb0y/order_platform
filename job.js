@@ -33,9 +33,10 @@ async function orderSuccessMonitor() {
     var client = redis.createClient();
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_success', 1);
+        console.log(data);
         if (!data) return;
         var order = JSON.parse(data[1]);
-        //console.log(order);
+        console.log(order);
         var partner = order.partner;
         console.log(partner);
         log.i(order.trade_no, `callback partner ${partner.name}
@@ -50,7 +51,8 @@ async function orderSuccessMonitor() {
                 't': t,
                 'trade_no': order.trade_no,
                 'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
-            }
+            },
+            json: true
         }).then((resp)=> {
             var callback_status = '回调失败';
             if (resp && resp.success)
@@ -60,13 +62,22 @@ async function orderSuccessMonitor() {
                     '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data);
-                log.e(err);
+                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                log.e(order.trade_no, err, program);
+            });
+            db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'-${order.partner_price})
+                     where _data->'$.name'='${partner.name}'`).catch((err)=> {
+                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                log.e(order.trade_no, err, program);
+            });
+            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1) where account_id=${order.account_id};`).catch((err)=> {
+                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                log.e(order.trade_no, err, program);
             });
             client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
-            client.lpush('order_platform:phone_charge:order_success', data);
+            client.lpush('order_platform:phone_charge:order_success', data[1]);
         });
     }, 5000);
 }
@@ -75,15 +86,16 @@ async function orderFaildMonitor() {
     var client = redis.createClient();
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_faild', 1);
+        //console.log(data);
         if (!data) return;
         var _data = JSON.parse(data[1]);
 
-        console.log(_data);
+        //console.log(_data);
 
         var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}' or _data->'$.pay_task_id'='${_data.trade_no}'`,
             {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
             log.e(_data.trade_no, err, program);
-            client.lpush('order_platform:phone_charge:order_faild', data);
+            client.lpush('order_platform:phone_charge:order_faild', data[1]);
         });
 
         var order = {};
@@ -95,7 +107,7 @@ async function orderFaildMonitor() {
             return;
         }
 
-        console.log(order);
+        //console.log(order);
 
         log.i(order.trade_no, `callback partner ${order.partner.name}
         GET ${order.callback}`, program);
@@ -121,13 +133,13 @@ async function orderFaildMonitor() {
                     '$.status','充值失败','$.callback_status','${callback_status}','$.order_faild_time','${_data.order_faild_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data);
+                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
                 log.e(err);
             });
             client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
-            client.lpush('order_platform:phone_charge:order_faild', data);
+            client.lpush('order_platform:phone_charge:order_faild', data[1]);
         });
     }, 5000);
 }
