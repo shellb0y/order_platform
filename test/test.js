@@ -67,8 +67,6 @@ var logger = require('../logger');
 //    console.log(order_id[0].order_id);
 //})();
 
-console.log(new Date());
-console.log(new Date().getTime()+30*1000);
 
 
 

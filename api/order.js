@@ -48,7 +48,8 @@ router.post('/order', async (ctx, next)=> {
                     }
                     redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
                 } else {
-                    redis_client.lpush('order_platform:phone_charge:order_faild', ctx.request.body.data.trade_no);
+                    redis_client.lpush('order_platform:phone_charge:order_faild',
+                        JSON.stringify({'trade_no':ctx.request.body.data.trade_no,'order_falid_time':new Date().format('yyyy-MM-dd hh:mm:ss')}));
                 }
 
                 redis_client.quit();

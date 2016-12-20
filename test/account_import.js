@@ -6,7 +6,7 @@ var readline = require('readline'),
     fs = require('fs');
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('jd_account_3.txt'),
+    input: fs.createReadStream('jd_account_4.txt'),
     output: process.stdout,
     terminal: false
 });

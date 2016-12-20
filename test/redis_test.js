@@ -3,33 +3,39 @@
  */
 var redis = require("../redis");
 var client = redis.createClient();
+require('../date_ex');
 
 //client.lpush('order_platform:phone_charge:order_pay_success','2016121920051259MNMHZZA00002',function(err,data){
 //    console.log(data);
 //    client.quit();
 //});
 
-var data = {
-    "partner": {
-        "code": "ZZ",
-        "name": "fbtest",
-        "enable": 1,
-        "secret": "0Y$$sTx0",
-        "balance": 9999999,
-        "order_timeout": "0"
-    },
-    'trade_no': '2016121920051259MNMHZZA00002',
-    'callback': 'http://192.168.3.113:3000/v1/api/callback',
-    'success': 1,
-    'amount': 94.5,
-    'partner_price': 98,
-    'order_sync_jd_status_time': '2016-12-19 08:00:00'
-};
-client.lpush('order_platform:phone_charge:order_success', JSON.stringify(data), function (err, data) {
+//var data = {
+//    "partner": {
+//        "code": "ZZ",
+//        "name": "fbtest",
+//        "enable": 1,
+//        "secret": "0Y$$sTx0",
+//        "balance": 9999999,
+//        "order_timeout": "0"
+//    },
+//    'trade_no': '2016121920051259MNMHZZA00002',
+//    'callback': 'http://192.168.3.113:3000/v1/api/callback',
+//    'success': 1,
+//    'amount': 94.5,
+//    'partner_price': 98,
+//    'order_sync_jd_status_time': '2016-12-19 08:00:00'
+//};
+//client.lpush('order_platform:phone_charge:order_success', JSON.stringify(data), function (err, data) {
+//    console.log(data);
+//    client.quit();
+//});
+
+var data = {'trade_no': '2016121920051259MNMHZZA00002', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
+client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
     console.log(data);
     client.quit();
 });
-
 
 //redis.client.set("string key1", "string val", (err, data)=> {
 //    if (!err) {

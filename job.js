@@ -36,25 +36,24 @@ async function orderSuccessMonitor() {
         if (!data) return;
         var order = JSON.parse(data[1]);
         //console.log(order);
-        var partner = JSON.parse(order.partner);
+        var partner = order.partner;
+        console.log(partner);
         log.i(order.trade_no, `callback partner ${partner.name}
         GET ${order.callback}`, program);
 
         var t = new Date();
         request({
-            method: 'GET',
             uri: order.callback,
-            body: {
+            qs: {
                 'partner_price': order.partner_price,
                 'success': order.success,
                 't': t,
                 'trade_no': order.trade_no,
-                'sign': crypto.createHash('md5').update(`${amount}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
-            },
-            json: false
-        }).then(function (repo) {
+                'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
+            }
+        }).then((resp)=> {
             var callback_status = '回调失败';
-            if (repos && repos.success)
+            if (resp && resp.success)
                 callback_status = '回调成功';
 
             db.sequelize.query(`update order_ set _data=JSON_SET(_data,
@@ -64,7 +63,7 @@ async function orderSuccessMonitor() {
                 client.lpush('order_platform:phone_charge:order_save_faild', data);
                 log.e(err);
             });
-            redis.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
+            client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
             client.lpush('order_platform:phone_charge:order_success', data);
@@ -77,7 +76,9 @@ async function orderFaildMonitor() {
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_faild', 1);
         if (!data) return;
-        var _data = JSON.parse(data);
+        var _data = JSON.parse(data[1]);
+
+        console.log(_data);
 
         var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}'`,
             {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
@@ -88,11 +89,13 @@ async function orderFaildMonitor() {
         var order = {};
         var secret = '';
         if (orders.length > 0) {
-            order = JSON.parse(partners[0]._data);
+            order = JSON.parse(orders[0]._data);
         } else {
             log.e(order.trade_no, `cant find order ${order.trade_no}`, program);
             return;
         }
+
+        console.log(order);
 
         log.i(order.trade_no, `callback partner ${order.partner.name}
         GET ${order.callback}`, program);
@@ -101,27 +104,27 @@ async function orderFaildMonitor() {
         request({
             method: 'GET',
             uri: order.callback,
-            body: {
+            qs: {
                 'partner_price': 0,
                 'success': 0,
                 't': t,
                 'trade_no': order.trade_no,
-                'sign': crypto.createHash('md5').update(`${amount}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
+                'sign': crypto.createHash('md5').update(`0${order.partner.name}0${t.getTime()}${order.trade_no}`).digest('hex')
             },
-            json: false
-        }).then(function (repo) {
+            json: true
+        }).then(function (repos) {
             var callback_status = '回调失败';
             if (repos && repos.success)
                 callback_status = '回调成功';
 
             db.sequelize.query(`update order_ set _data=JSON_SET(_data,
-                    '$.status','充值失败','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
+                    '$.status','充值失败','$.callback_status','${callback_status}','$.order_faild_time','${_data.order_faild_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
                 client.lpush('order_platform:phone_charge:order_save_faild', data);
                 log.e(err);
             });
-            redis.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
+            client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
             client.lpush('order_platform:phone_charge:order_faild', data);
