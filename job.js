@@ -80,7 +80,7 @@ async function orderFaildMonitor() {
 
         console.log(_data);
 
-        var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}'`,
+        var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}' or _data->'$.pay_task_id'='${_data.trade_no}'`,
             {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
             log.e(_data.trade_no, err, program);
             client.lpush('order_platform:phone_charge:order_faild', data);
