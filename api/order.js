@@ -126,11 +126,13 @@ router.post('/order/status', async (ctx, next)=> {
             throw new Error(err);
     });
 
+    var client = redis.createClient();
     if (ctx.request.body.status == '付款成功' || ctx.request.body.status == '已付款待确认' || ctx.request.body.status == '付款待人工核实') {
-        redis.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
+        client.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
     }else if(ctx.request.body.status == '付款失败'){
-        redis.lpush('order_platform:phone_charge:order_faild', ctx.request.body.order_id);
+        client.lpush('order_platform:phone_charge:order_faild', ctx.request.body.order_id);
     }
+    client.quit();
 
     //ctx.body = ret[0].affectedRows;
     ctx.body = 'success';
