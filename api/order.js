@@ -25,7 +25,7 @@ router.post('/order', async (ctx, next)=> {
             var status = ctx.request.body.data.status;
 
             if (status == '下单成功') {
-                db.sequelize.query(`update account_ set _data=JSON_INSERT(_data,'$.order_90_5_count',1)
+                db.sequelize.query(`update account_ set _data=JSON_SET(_data,'$.order_count',1,'$.pay_status',0)
                 where account_id=${ctx.request.body.data.account.account_id}`).catch((err)=> {
                     if (err instanceof Error)
                         throw err;

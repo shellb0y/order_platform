@@ -33,12 +33,12 @@ async function orderSuccessMonitor() {
     var client = redis.createClient();
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_success', 1);
-        console.log(data);
+        //console.log(data);
         if (!data) return;
         var order = JSON.parse(data[1]);
-        console.log(order);
+        //console.log(order);
         var partner = order.partner;
-        console.log(partner);
+        //console.log(partner);
         log.i(order.trade_no, `callback partner ${partner.name}
         GET ${order.callback}`, program);
 
@@ -70,7 +70,7 @@ async function orderSuccessMonitor() {
                 client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
                 log.e(order.trade_no, err, program);
             });
-            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1) where account_id=${order.account_id};`).catch((err)=> {
+            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account_id};`).catch((err)=> {
                 client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
                 log.e(order.trade_no, err, program);
             });

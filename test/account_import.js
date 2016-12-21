@@ -18,7 +18,10 @@ rl.on('line', function (line) {
                     username: line.split('----')[0],
                     password: line.split('----')[1],
                     pc_cookie:line.split('----')[3],
-                    source:'xiaoafei'
+                    source:'xiaoafei',
+                    cost:0,
+                    valid:1,
+                    unused_discount:5
                 },
                 created: Date.now()
             }
