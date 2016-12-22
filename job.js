@@ -24,8 +24,8 @@ module.exports = function () {
     //    });
     //}, null, true);
 
-    orderSuccessMonitor();
-    orderFaildMonitor();
+    //orderSuccessMonitor();
+    //orderFaildMonitor();
 };
 
 

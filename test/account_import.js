@@ -6,25 +6,36 @@ var readline = require('readline'),
     fs = require('fs');
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('jd_account_4.txt'),
+    input: fs.createReadStream('jd_account_5_app_utf8.txt'),
     output: process.stdout,
     terminal: false
 });
 
+//rl.on('line', function (line) {
+//    if(line) {
+//        db.account.create({
+//                _data: {
+//                    username: line.split('----')[0],
+//                    password: line.split('----')[1],
+//                    pc_cookie:line.split('----')[3],
+//                    source:'xiaoafei',
+//                    cost:0,
+//                    valid:1,
+//                    unused_discount:5
+//                },
+//                created: Date.now()
+//            }
+//        ).then((data)=>console.log(`${data} success`));
+//    }
+//});
+
 rl.on('line', function (line) {
-    if(line) {
-        db.account.create({
-                _data: {
-                    username: line.split('----')[0],
-                    password: line.split('----')[1],
-                    pc_cookie:line.split('----')[3],
-                    source:'xiaoafei',
-                    cost:0,
-                    valid:1,
-                    unused_discount:5
-                },
-                created: Date.now()
-            }
-        ).then((data)=>console.log(`${data} success`));
+    if (line) {
+        db.sequelize.query(`update account_ set _data=JSON_SET(_data,'$.cookie','${line.split('----')[3]}') where _data->'$.username'='${line.split('----')[0]}'`).catch((err)=> {
+            if (err instanceof Error)
+                throw err;
+            else
+                throw new Error(err);
+        });
     }
 });
