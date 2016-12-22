@@ -18,12 +18,34 @@ var logger = require('../logger');
 //    console.log(trade_no);
 //})();
 
-//logger.t("trace");
-//logger.d("debug");
-//logger.i("info");
-//logger.w("warn");
-//logger.e('test error');
-//logger.e(new Error('test error'));
+logger.t("trace");
+logger.d("key","debug","order_platform");
+logger.i("key","debug","order_platform");
+logger.w("key","debug","order_platform");
+logger.e("key","debug","order_platform");
+
+
+var dgram = require('dgram');
+var host = '115.28.102.142';
+var port = 55514;
+var client = dgram.createSocket('udp4');
+//var data = {
+//    'program': program || 'order_platform',
+//    '@tags': key || [],
+//    'message': msg,
+//    '@fields.levelname': level
+//};
+//
+//data = JSON.stringify(data);
+var message = Buffer.from('test');
+client.send(message, 0, message.length, port, host, function (err, bytes) {
+    console.log('complete');
+    if (err)
+        console.error(err);
+    client.close();
+});
+
+//logger.e("key",new Error('test error'));
 
 //(async function () {
 //    var ret = await db.sequelize.query(`update order_ set _data=JSON_REPLACE(_data,'$.status','11') where order_id=1`);

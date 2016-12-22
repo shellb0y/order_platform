@@ -6,27 +6,25 @@ var host = '115.28.102.142';
 var port = 55514;
 
 function send2Server(level, key, msg, program) {
-
     var client = dgram.createSocket('udp4');
-
     var data = {
         'program': program || 'order_platform',
-        'key': key || '',
+        '@tags': key || [],
         'message': msg,
         '@fields.levelname': level
     };
-    console.log(data);
+
     data = JSON.stringify(data);
-    var message = new Buffer(data);
-    client.send(data, 0, message.length, port, host, function (err, bytes) {
+    var message = Buffer.from(data);
+    client.send(message, 0, message.length, port, host, function (err, bytes) {
         if (err)
             console.error(err);
         client.close();
     });
 }
 
-exports.t = (key, message, program)=> {
-    console.log(key, message, program);
+exports.t = (message)=> {
+    console.log(message);
 };
 
 exports.i = (key, message, program)=> {
