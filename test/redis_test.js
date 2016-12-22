@@ -32,11 +32,21 @@ require('../date_ex');
 //    client.quit();
 //});
 
-var data = {'trade_no': '20161220145431631QBGTZZA00008', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
-client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
-    console.log(data);
-    client.quit();
-});
+client.lpush('order_platform:phone_charge:order_pay_success', 'b3f9f6ea3d11475ea55162ef31e2f2d6');
+client.quit();
+
+//var data = {'trade_no': '20161220145431631QBGTZZA00008', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
+//client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
+//    console.log(data);
+//    client.quit();
+//});
+
+//(async ()=>{
+//    console.log(await redis.setnxSync(client,'order_platform:partner_order_id:xs:123213214',1));
+//    console.log(await redis.setnxSync(client,'order_platform:partner_order_id:xs:123213214',1));
+//    client.quit();
+//})();
+
 
 //client.lpush('order_platform:phone_charge:order_pay_success', '20161220141422625XXPVZZA00003', function (err, data) {
 //    console.log(data);

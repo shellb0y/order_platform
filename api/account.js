@@ -6,8 +6,8 @@ var router = require('koa-router')();
 var db = require('../models/db');
 
 router.get('/jd/phone_charge', async (ctx, next)=> {
-    var accounts = await db.sequelize.query(`select * from account_ where _data->'$.valid' is null and _data->'$.pc_cookie' is not null
-     and _data->'$.order_90_5_count' is null order by rand() limit 1`,
+    var accounts = await db.sequelize.query(`select * from account_ where _data->'$.valid' = 1 and _data->'$.pc_cookie' is not null and _data->'$.cookie' is not null
+     and _data->'$.order_count' is null order by rand() limit 1`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;

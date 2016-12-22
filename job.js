@@ -62,18 +62,25 @@ async function orderSuccessMonitor() {
                     '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                log.e(order.trade_no, err, program);
+                if(!err) {
+                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                    log.e(order.trade_no, err, program);
+                }
             });
             db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'-${order.partner_price})
                      where _data->'$.name'='${partner.name}'`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                log.e(order.trade_no, err, program);
+                if(!err) {
+                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                    log.e(order.trade_no, err, program);
+                }
             });
             db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account_id};`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                log.e(order.trade_no, err, program);
+                if(!err) {
+                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                    log.e(order.trade_no, err, program);
+                }
             });
+
             client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
@@ -133,10 +140,13 @@ async function orderFaildMonitor() {
                     '$.status','充值失败','$.callback_status','${callback_status}','$.order_faild_time','${_data.order_faild_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                log.e(err);
+                if(!err) {
+                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+                    log.e(err);
+                }
+            }).then(data=>{
+                client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
             });
-            client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
             client.lpush('order_platform:phone_charge:order_faild', data[1]);

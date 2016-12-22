@@ -4,9 +4,20 @@
 'use strict';
 var redis = require('redis');
 
-exports.brpopSync = async function(client,queueName,timeout){
+exports.setnxSync = async function (client, key, value) {
     return await new Promise((resovle, reject)=> {
-        client.brpop(queueName,timeout, (err, data)=> {
+        client.setnx(key, value, (err, data)=> {
+            if (err)
+                reject(err);
+            else
+                resovle(data);
+        });
+    });
+};
+
+exports.brpopSync = async function (client, queueName, timeout) {
+    return await new Promise((resovle, reject)=> {
+        client.brpop(queueName, timeout, (err, data)=> {
             if (err)
                 reject(err);
             else

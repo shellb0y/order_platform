@@ -6,11 +6,11 @@ var db = require('../../models/db');
 
 /**
  * @api {GET} /order 获取订单列表
- * @apiName GET_ACCOUNTS
+ * @apiName GET_ORDER_LIST
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 获取账号
+ * @apiDescription 获取订单列表,管理员多增加一个参数s=1即可查看所有数据,否则不显示敏感数据
  *
  * @apiParam {String}   source      商户名,商户只能看自己的订单,一级合作伙伴和管理员可以查看所有商户(传入中文"所有")的订单
  * @apiParam {String}   status      状态(对商户和一级合作伙伴而言:暂时只有三个状态:充值成功|充值失败|充值中,对管理员而言可以访问/order/status(获取订单状态)获取所有状态)
@@ -51,7 +51,7 @@ var db = require('../../models/db');
  * @apiSuccess {Object} stat 统计数据,建议在页面动态生成
  *
  * @apiExample Example usage:
- * curl -i /api/view/account?source=xiaoafei&status=%E6%89%80%E6%9C%89&from=2016-12-1&to=2016-12-20&page_index=0&page_size=30
+ * curl -i /api/view/order?source=xiaoafei&status=%E6%89%80%E6%9C%89&from=2016-12-1&to=2016-12-20&page_index=0&page_size=30
  *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
@@ -130,7 +130,7 @@ router.get('/', async (ctx, next)=> {
             data.push(JSON.parse(orders[0][i]._data));
         }
 
-        ctx.body = {
+        var resp = {
             list: data,
             total: orders[1]['0'].total_count,
             pageCurrent: Number(ctx.request.query.page_index) + 1,
@@ -139,6 +139,20 @@ router.get('/', async (ctx, next)=> {
                 '对账金额': orders[2]['0'].partner_price
             }
         };
+
+        if(!ctx.request.query.s) {
+            for(var l of resp.list) {
+                delete l.money;
+                delete l.amount;
+                delete l.dxqids;
+                delete l.account;
+                delete l.partner;
+                delete l.discount;
+                delete l.jd_price;
+                delete l.jd_order_id;
+            }
+        }
+        ctx.body = resp;
     }
 });
 
