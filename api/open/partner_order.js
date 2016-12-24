@@ -7,7 +7,7 @@ var db = require('../../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
 var redis = require("../../redis");
-var redis2 = require("../../redis2");
+//var redis2 = require("../../redis2");
 var utility = require('../../utility');
 require('../../date_ex');
 require('../../string_ex');
@@ -420,14 +420,14 @@ router.get('/partner/balance', async function (ctx, next) {
 });
 
 router.get('/test', async function (ctx, next) {
-    ctx.body = await new Promise((resolve,reject)=>{
-        redis2.client.exists("1111",function(err,data){
-            if(err)
-                throw err;
-            else
-                resolve('1');
-        });
-    });
+    //ctx.body = await new Promise((resolve,reject)=>{
+    //    redis2.client.exists("1111",function(err,data){
+    //        if(err)
+    //            console.log(err);
+    //        else
+    //            resolve('1');
+    //    });
+    //});
 });
 
 router.get('/callback', async (ctx, next)=> {
