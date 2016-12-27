@@ -5,8 +5,8 @@
     <file url="file://$PROJECT_DIR$/test/2016-12-27_app.txt" charset="GBK" />
     <file url="file://$PROJECT_DIR$/test/2016-12-27_pc.txt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test/2016-12-27_pc.txt" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/test/jd_account_5_app.txt" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/test/jd_account_5_pc.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/test/account_res/jd_account_5_app.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/test/account_res/jd_account_5_pc.txt" charset="GBK" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

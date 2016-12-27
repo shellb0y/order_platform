@@ -32,8 +32,8 @@ require('../date_ex');
 //    client.quit();
 //});
 
-client.lpush('order_platform:phone_charge:order_pay_success', 'b3f9f6ea3d11475ea55162ef31e2f2d6');
-client.quit();
+//client.lpush('order_platform:phone_charge:order_pay_success', 'b3f9f6ea3d11475ea55162ef31e2f2d6');
+//client.quit();
 
 //var data = {'trade_no': '20161220145431631QBGTZZA00008', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
 //client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
@@ -64,13 +64,21 @@ client.quit();
 //        console.log(data);
 //    }
 //});
-//client.quit();
+
 
 //client.set('order_platform:phone_charge:trade_no:1111','11111');
+//client.get('order_platform:phone_charge:trade_no:1111',(err,data)=>{
+//    console.log(data);
+//});
 //client.hgetall('order_platform:phone_charge:trade_no:20161211203604436HPQNA00001',(err,data)=>{
 //    console.log(data);
 //});
-//client.del('order_platform:phone_charge:trade_no:1111');
+
+
+//client.del('order_platform:phone_charge:trade_no:1111',(err,data)=>{
+//    console.log(data);
+//});
+//client.quit();
 //client.exists('order_platform:phone_charge:trade_no:1111',(err,data)=>{
 //    console.log(data);
 //});

@@ -79,7 +79,7 @@ exports.hmsetSync = async (client, key, value)=> {
 };
 
 exports.createClient = function () {
-    var client = redis.createClient(6379, '139.199.65.115');
+    var client = redis.createClient(6379, '139.199.65.115', {password: 'melodicdeath'});
     //client.select(1, function (err, data) {
     //    if (err)
     //        console.log('redis select db error -' + err);

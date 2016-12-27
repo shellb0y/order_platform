@@ -164,8 +164,33 @@ router.get('/source/:partner_name', async (ctx, next)=> {
         ctx.body = [];
 });
 
-
-router.post('/upload', async(ctx, next)=> {
+/**
+ * @api {POST} /account 上传账号
+ * @apiName UPLOAD_ACCOUNT
+ * @apiVersion 1.0.0
+ * @apiGroup Account
+ *
+ * @apiDescription 上传账号
+ *
+ * @apiExample Example usage:
+ * curl -i -X POST \
+ * -H "Content-type:application/json" \
+ * -H "charset':utf-8" \
+ * -H "Accept: text/plain" \
+ * -d '{"cost":0,"data":["明枫芝辉馨星----cnm2016*----re59xnt8----pin=%E6%98%8E%E6%9E%AB%E8%8A%9D%E8%BE%89%E9%A6%A8%E6%98%9F; wskey=AAFYYg9OAFABS5B4jyVZhyWZ58-02ttCiWIk0Sv69VLnHdiAtvtEQVJkqbjPhFU4O837wSyP7QByDS6NIuInMnnRnywlmPNHnNkm527-xlmopKtWkpFO_g; whwswswws=; uuid=010254432301522-FEC4168C048C",
+ * "戴枝昭耿芸育lrX6----cnm2016*----qq345678----pin=%E6%88%B4%E6%9E%9D%E6%98%AD%E8%80%BF%E8%8A%B8%E8%82%B2lrX6; wskey=AAFYYg9PAFA1B1-FVsNRfCcbA1xCaU9_xDo1yPdHbjS90zNNdbqsz_0utNf5N-PxFfqG5V-OWzSqgSj97-JJcZJYEQ_A7d3zF2jkm3m7Wj4ZLSonvMXmJQ; whwswswws=; uuid=010185182301363-8C5E01E137BF;"]}'\
+ * /api/view/account
+ *
+ * @apiSuccess {Boolean} success 是否成功
+ * @apiSuccess {Number} affectedRows 受影响行数
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "affeted_rows": 2
+ * }
+ * */
+router.post('/', async(ctx, next)=> {
     var data = [];
     for (var a of ctx.request.body.data) {
         data.push({
@@ -183,8 +208,14 @@ router.post('/upload', async(ctx, next)=> {
         });
     }
 
-    db.account.bulkCreate(data);
-    ctx.body = 1;
+    var affectedRows = await db.account.bulkCreate(data).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    ctx.body = {success: true, affeted_rows: affectedRows.length}
 });
 
 

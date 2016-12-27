@@ -5,11 +5,11 @@ var db = require('../models/db');
 var readline = require('readline'),
     fs = require('fs');
 
-var rl = readline.createInterface({
-    input: fs.createReadStream('2016-12-27_app_utf8.txt'),
-    output: process.stdout,
-    terminal: false
-});
+//var rl = readline.createInterface({
+//    input: fs.createReadStream('2016-12-27_app_utf8.txt'),
+//    output: process.stdout,
+//    terminal: false
+//});
 
 //rl.on('line', function (line) {
 //    var data = [];
@@ -32,13 +32,20 @@ var rl = readline.createInterface({
 //    db.account.bulkCreate(data).catch((err)=>console.log(err));
 //});
 
-rl.on('line', function (line) {
-    if (line) {
-        db.sequelize.query(`update account_ set _data=JSON_SET(_data,'$.cookie','${line.split('----')[3]}') where _data->'$.username'='${line.split('----')[0]}'`).catch((err)=> {
-            if (err instanceof Error)
-                throw err;
-            else
-                throw new Error(err);
-        });
-    }
-});
+//rl.on('line', function (line) {
+//    if (line) {
+//        db.sequelize.query(`update account_ set _data=JSON_SET(_data,'$.cookie','${line.split('----')[3]}') where _data->'$.username'='${line.split('----')[0]}'`).catch((err)=> {
+//            if (err instanceof Error)
+//                throw err;
+//            else
+//                throw new Error(err);
+//        });
+//    }
+//});
+
+db.account.bulkCreate([
+    {_data: {username: '123'}, created: Date.now()},
+    {_data: {username: '123'}, created: Date.now()}
+]).then((data)=> {
+    console.log(data.length);
+}).catch((err)=>console.log(err));

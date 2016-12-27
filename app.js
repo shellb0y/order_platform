@@ -19,6 +19,7 @@ const account_api = require('./api/account');
 const view_account_api = require('./api/view/account');
 const view_order_api = require('./api/view/order');
 const view_partner_api = require('./api/view/partner');
+const view_system_api = require('./api/view/system');
 const partner_order_api_test = require('./api/open/partner_order_test');
 const __static = require('koa-static');
 const __static_folder = require('koa-static-folder');
@@ -54,6 +55,7 @@ router.use('/api/account', account_api.routes(), account_api.allowedMethods());
 router.use('/api/view/account', view_account_api.routes(), view_account_api.allowedMethods());
 router.use('/api/view/order', view_order_api.routes(), view_order_api.allowedMethods());
 router.use('/api/view/partner', view_partner_api.routes(), view_partner_api.allowedMethods());
+router.use('/api/view/system', view_system_api.routes(), view_system_api.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
