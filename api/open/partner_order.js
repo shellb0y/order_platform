@@ -83,45 +83,45 @@ router.get('/order', async function (ctx, next) {
     var ret = {};
 
     if (!sign) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter sign'}};
+        ret = {'success': false, 'error': {'code': 'PARM_SIGN_INVALID', 'message': 'missing parameter sign'}};
         ctx.body = ret;
         return;
     } else if (!t) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter t'}};
+        ret = {'success': false, 'error': {'code': 'PARM_T_INVALID', 'message': 'missing parameter t'}};
         ctx.body = ret;
         return;
     } else if (!id) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter id'}};
+        ret = {'success': false, 'error': {'code': 'PARM_ID_INVALID', 'message': 'missing parameter id'}};
         ctx.body = ret;
         return;
     } else if (!mobile) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter mobile'}};
+        ret = {'success': false, 'error': {'code': 'PARM_MOBILE_INVALID', 'message': 'missing parameter mobile'}};
         ctx.body = ret;
         return;
     } else if (!partner) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter partner'}};
+        ret = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'missing parameter partner'}};
         ctx.body = ret;
         return;
     }
     else if (!amount) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter amount'}};
+        ret = {'success': false, 'error': {'code': 'PARM_AMOUNT_INVALID', 'message': 'missing parameter amount'}};
         ctx.body = ret;
         return;
     }
     else if (!callback) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter callback'}};
+        ret = {'success': false, 'error': {'code': 'PARM_CALLBACK_INVALID', 'message': 'missing parameter callback'}};
         ctx.body = ret;
         return;
     }
 
     if (!(/^1[34578]\d{9}$/.test(mobile))) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'mobile invalid'}};
+        ret = {'success': false, 'error': {'code': 'PARM_MOBILE_INVALID', 'message': 'mobile invalid'}};
         ctx.body = ret;
         return;
     }
 
     if (!(parseFloat(amount) == 100)) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'amount not support'}};
+        ret = {'success': false, 'error': {'code': 'PARM_AMOUNT_INVALID', 'message': 'amount not support'}};
         ctx.body = ret;
         return;
     }
@@ -139,7 +139,7 @@ router.get('/order', async function (ctx, next) {
         _partner = JSON.parse(partners[0]._data);
         secret = _partner.secret;
     } else {
-        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
+        ctx.body = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'partner not found'}};
         return;
     }
 
@@ -156,7 +156,7 @@ router.get('/order', async function (ctx, next) {
 
         var partner_order_key = `order_platform:partner_orderid:${partner}:${id}`;
         if(!await redis.setnxSync(redis_client,partner_order_key,1)){
-            ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'repeat request'}};
+            ctx.body = {'success': false, 'error': {'code': 'REQUEST_INVALID', 'message': 'repeat request'}};
             return;
         }
 
@@ -249,19 +249,19 @@ router.get('/order/status', async function (ctx, next) {
     var ret = {};
 
     if (!sign) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter sign'}};
+        ret = {'success': false, 'error': {'code': 'PARM_SIGN_INVALID', 'message': 'missing parameter sign'}};
         ctx.body = ret;
         return;
     } else if (!t) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter t'}};
+        ret = {'success': false, 'error': {'code': 'PARM_T_INVALID', 'message': 'missing parameter t'}};
         ctx.body = ret;
         return;
     } else if (!trade_no) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter trade_no'}};
+        ret = {'success': false, 'error': {'code': 'PARM_TRADE_NO_INVALID', 'message': 'missing parameter trade_no'}};
         ctx.body = ret;
         return;
     } else if (!partner) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter partner'}};
+        ret = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'missing parameter partner'}};
         ctx.body = ret;
         return;
     }
@@ -278,7 +278,7 @@ router.get('/order/status', async function (ctx, next) {
     if (partners.length > 0) {
         _partner = JSON.parse(partners[0]._data);
     } else {
-        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
+        ctx.body = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'partner not found'}};
         return;
     }
 
@@ -312,7 +312,7 @@ router.get('/order/status', async function (ctx, next) {
                 ret.data.status = JSON.parse(orders[0]._data).status;
             }
             else
-                ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'order not found'}};
+                ret = {'success': false, 'error': {'code': 'ORDER_INVALID', 'message': 'order not found'}};
         }
     }
     else {
@@ -372,15 +372,15 @@ router.get('/partner/balance', async function (ctx, next) {
     var ret = {};
 
     if (!sign) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter sign'}};
+        ret = {'success': false, 'error': {'code': 'PARM_SIGN_INVALID', 'message': 'missing parameter sign'}};
         ctx.body = ret;
         return;
     } else if (!t) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter t'}};
+        ret = {'success': false, 'error': {'code': 'PARM_T_INVALID', 'message': 'missing parameter t'}};
         ctx.body = ret;
         return;
     } else if (!partner) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter partner'}};
+        ret = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'missing parameter partner'}};
         ctx.body = ret;
         return;
     }
@@ -398,7 +398,7 @@ router.get('/partner/balance', async function (ctx, next) {
         _partner = JSON.parse(partners[0]._data);
         secret = _partner.secret;
     } else {
-        ctx.body = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner not found'}};
+        ctx.body = {'success': false, 'error': {'code': 'PARM_PARTNER_INVALID', 'message': 'partner not found'}};
         return;
     }
 

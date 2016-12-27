@@ -49,7 +49,10 @@ router.post('/order', async (ctx, next)=> {
                     redis_client.lpush('order_platform:phone_charge:order', ctx.request.body.data.trade_no);
                 } else {
                     redis_client.lpush('order_platform:phone_charge:order_faild',
-                        JSON.stringify({'trade_no':ctx.request.body.data.trade_no,'order_faild_time':new Date().format('yyyy-MM-dd hh:mm:ss')}));
+                        JSON.stringify({
+                            'trade_no': ctx.request.body.data.trade_no,
+                            'order_faild_time': new Date().format('yyyy-MM-dd hh:mm:ss')
+                        }));
                 }
 
                 redis_client.quit();
@@ -127,9 +130,13 @@ router.post('/order/status', async (ctx, next)=> {
     });
 
     var client = redis.createClient();
-    if (ctx.request.body.status == '付款成功' || ctx.request.body.status == '已付款待确认' || ctx.request.body.status == '付款待人工核实') {
-        client.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
-    }else if(ctx.request.body.status == '付款失败'){
+    if (ctx.request.body.status == '付款成功' || ctx.request.body.status == '已付款待确认') {
+        var key = 'order_platform:phone_charge:order_pay_success';
+        if (!redis.setnxSync(client, `${key}:${ctx.request.body.order_id}`, '1')) {
+            client.expire(`${key}:${ctx.request.body.order_id}`, 10 * 60);
+            client.lpush(key, ctx.request.body.order_id);
+        }
+    } else if (ctx.request.body.status == '付款失败') {
         client.lpush('order_platform:phone_charge:order_faild', ctx.request.body.order_id);
     }
     client.quit();
