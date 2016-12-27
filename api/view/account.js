@@ -127,7 +127,7 @@ router.get('/source', async (ctx, next)=> {
             throw new Error(err);
     });
 
-    if (sources.length >0)
+    if (sources.length > 0)
         ctx.body = JSON.parse(sources[0].source);
     else
         ctx.body = [];
@@ -158,10 +158,33 @@ router.get('/source/:partner_name', async (ctx, next)=> {
             throw new Error(err);
     });
 
-    if (sources.length >0)
+    if (sources.length > 0)
         ctx.body = JSON.parse(sources[0].source);
     else
         ctx.body = [];
+});
+
+
+router.post('/upload', async(ctx, next)=> {
+    var data = [];
+    for (var a of ctx.request.body.data) {
+        data.push({
+            _data: {
+                username: a.split('----')[0],
+                password: a.split('----')[1],
+                pay_password: a.split('----')[2],
+                pc_cookie: a.split('----')[3],
+                source: 'xiaoafei',
+                cost: ctx.request.body.cost,
+                valid: 1,
+                unused_discount: 5
+            },
+            created: Date.now()
+        });
+    }
+
+    db.account.bulkCreate(data);
+    ctx.body = 1;
 });
 
 

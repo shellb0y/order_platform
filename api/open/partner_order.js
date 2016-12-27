@@ -69,7 +69,7 @@ function md5(text) {
  *       "error": {"code":"SIGN_INVALID","message":"signature verification failed."}
  *     }
  * */
-router.get('/order_dsfdsfdsfdsfdsfds', async function (ctx, next) {
+router.get('/order', async function (ctx, next) {
     console.log(ctx.request.query);
 
     var sign = ctx.request.query.sign;
