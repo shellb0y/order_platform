@@ -5,10 +5,10 @@ var redis = require("../redis");
 var client = redis.createClient();
 require('../date_ex');
 
-//client.lpush('order_platform:phone_charge:order_pay_success','2016121920051259MNMHZZA00002',function(err,data){
-//    console.log(data);
-//    client.quit();
-//});
+client.lpush('order_platform:phone_charge:order_pay_success','20161228152642651VFSRAAA00007',function(err,data){
+    console.log(data);
+    client.quit();
+});
 
 //var data = {
 //    "partner": {
