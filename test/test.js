@@ -90,9 +90,9 @@ var client = dgram.createSocket('udp4');
 //})();
 
 var order = {
-    'partner_price': 0,
-    'trade_no': '20161228152625160CMWGAAA00006',
-    'success': 0,
+    'partner_price': 98,
+    'trade_no': '20161228152642651VFSRAAA00007',
+    'success': 1,
     'callback': 'http://120.27.134.79:23300/hf_gezi/chargeChannelAction/notifyUrl.do'
 };
 var partner = {'secret': 'd!GqE$Sz'};

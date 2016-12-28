@@ -15,9 +15,31 @@ exports.setnxSync = async function (client, key, value) {
     });
 };
 
+exports.lpushSync = async function (client, key, value) {
+    return await new Promise((resovle, reject)=> {
+        client.lpush(key, value, (err, data)=> {
+            if (err)
+                reject(err);
+            else
+                resovle(data);
+        });
+    });
+};
+
 exports.brpopSync = async function (client, queueName, timeout) {
     return await new Promise((resovle, reject)=> {
         client.brpop(queueName, timeout, (err, data)=> {
+            if (err)
+                reject(err);
+            else
+                resovle(data);
+        });
+    });
+};
+
+exports.getSync = async function (client, key) {
+    return await new Promise((resovle, reject)=> {
+        client.get(key, (err, data)=> {
             if (err)
                 reject(err);
             else

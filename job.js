@@ -48,10 +48,10 @@ async function orderSuccessMonitor() {
             uri: order.callback,
             qs: {
                 'amount': order.partner_price,
-                'success': order.success,
+                'success': 1,
                 't': time,
                 'trade_no': order.trade_no,
-                'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex')
+                'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}1${time}${order.trade_no}`).digest('hex')
             },
             json: true
         }).then((resp)=> {

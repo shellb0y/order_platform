@@ -154,6 +154,11 @@ router.get('/order', async function (ctx, next) {
 
         var redis_client = redis.createClient();
 
+        if(await redis.getSync(`order_platform:switch:order_accpet`) == '0'){
+            ctx.body = {'success': false, 'error': {'code': 'RESOURCE_INVALID', 'message': 'resource not enough'}};
+            return;
+        }
+
         var partner_order_key = `order_platform:partner_orderid:${partner}:${id}`;
         if(!await redis.setnxSync(redis_client,partner_order_key,1)){
             ctx.body = {'success': false, 'error': {'code': 'REQUEST_INVALID', 'message': 'repeat request'}};

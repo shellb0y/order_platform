@@ -3,6 +3,8 @@
  */
 var router = require('koa-router')();
 var db = require('../../models/db');
+var redis = require("../../redis");
+require('../../date_ex');
 
 /**
  * @api {POST} /callback/paysuccess 支付成功回调
@@ -21,8 +23,24 @@ var db = require('../../models/db');
  * {
  *   "success": true
  * }
+ *
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": false,
+ *   "err":""
+ * }
  * */
 router.post('/callback/paysuccess', async(ctx, next)=> {
+    var redis_client = redis.createClient();
+    var data =await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_pay_success', ctx.request.body.trade_no).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+    redis_client.quit();
+
+    console.log(`manual callback paysuccess:${data.trade_no},push order_pay_success,${data}`);
     ctx.body = {'success': true};
 });
 
@@ -43,8 +61,45 @@ router.post('/callback/paysuccess', async(ctx, next)=> {
  * {
  *   "success": true
  * }
+ *
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": false,
+ *   "err":"找不到订单"
+ * }
  * */
 router.post('/callback/success', async(ctx, next)=> {
+    var trade_no = ctx.request.body.trade_no;
+    if (!trade_no) {
+        ctx.body = {'success': false, 'err': '找不到订单'};
+        return;
+    }
+
+    var order = await db.sequelize.query(`select _data from order_ where _data->'$.pay_task_id' = '${trade_no}' or _data->'$.trade_no'='${trade_no}'`,
+        {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    if (order.length == 0) {
+        ctx.body = {'success': false, 'err': '找不到订单'};
+        return;
+    }
+
+    order = JSON.parse(order[0]._data);
+    order.order_sync_jd_status_time = new Date().format('yyyy-MM-dd hh:mm:ss');
+
+    var redis_client = redis.createClient();
+    var data = await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_success', JSON.stringify(order)).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+    redis_client.quit();
+    console.log(`manual callback order_success:${order.trade_no},push order_success,${data}`);
     ctx.body = {'success': true};
 });
 
@@ -65,8 +120,25 @@ router.post('/callback/success', async(ctx, next)=> {
  * {
  *   "success": true
  * }
+ *
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": false,
+ *   "err":""
+ * }
  * */
 router.post('/callback/faild', async(ctx, next)=> {
+    var data = {'trade_no': ctx.request.body.trade_no, 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
+    var redis_client = redis.createClient();
+    var data = await redis_client.lpushSync(redis_client, 'order_platform:phone_charge:order_faild', JSON.stringify(data)).catch((err)=> {
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+
+    redis_client.quit();
+    console.log(`manual callback order_faild:${data.trade_no},push order_faild,${data}`);
     ctx.body = {'success': true};
 });
 

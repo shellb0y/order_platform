@@ -44,8 +44,10 @@ require('../date_ex');
 //});
 
 //(async ()=>{
-//    console.log(await redis.setnxSync(client,'order_platform:partner_order_id:xs:123213214',1));
-//    console.log(await redis.setnxSync(client,'order_platform:partner_order_id:xs:123213214',1));
+//    if(await redis.getSync(client,`order_platform:switch:order_accpet`) == "1")
+//        console.log("1");
+//    else
+//        console.log("0");
 //    client.quit();
 //})();
 
