@@ -43,14 +43,15 @@ async function orderSuccessMonitor() {
         GET ${order.callback}`, program);
 
         var t = new Date();
+        var time = t.getTime();
         request({
             uri: order.callback,
             qs: {
-                'partner_price': order.partner_price,
+                'amount': order.partner_price,
                 'success': order.success,
-                't': t,
+                't': time,
                 'trade_no': order.trade_no,
-                'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
+                'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex')
             },
             json: true
         }).then((resp)=> {
@@ -97,7 +98,7 @@ async function orderFaildMonitor() {
         if (!data) return;
         var _data = JSON.parse(data[1]);
 
-        //console.log(_data);
+        console.log(_data);
 
         var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}' or _data->'$.pay_task_id'='${_data.trade_no}'`,
             {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
@@ -114,21 +115,22 @@ async function orderFaildMonitor() {
             return;
         }
 
-        //console.log(order);
+        console.log(order);
 
         log.i(order.trade_no, `callback partner ${order.partner.name}
         GET ${order.callback}`, program);
 
         var t = new Date();
+        var time = t.getTime();
         request({
             method: 'GET',
             uri: order.callback,
             qs: {
-                'partner_price': 0,
+                'amount': 0,
                 'success': 0,
-                't': t,
+                't': time,
                 'trade_no': order.trade_no,
-                'sign': crypto.createHash('md5').update(`0${order.partner.name}0${t.getTime()}${order.trade_no}`).digest('hex')
+                'sign': crypto.createHash('md5').update(`0${order.partner.secret}0${time}${order.trade_no}`).digest('hex')
             },
             json: true
         }).then(function (repos) {

@@ -31,6 +31,7 @@ var db = require('../../models/db');
  * @apiSuccess {Number} list.pay_status 账号订单支付状态,0未支付,1已支付
  * @apiSuccess {Number} list.valid 账号是否有效,0无效1有效
  * @apiSuccess {String} list.valid_message 账号无效原因
+ * @apiSuccess {String} list.discount 已使用的优惠券金额
  * @apiSuccess {String} list.unused_discount 未使用的优惠券金额
  * @apiSuccess {Number} total 总页数
  * @apiSuccess {Number} pageCurrent 当前页码
@@ -48,6 +49,7 @@ var db = require('../../models/db');
       "source": "xiaoafei",
       "password": "vbnm1357",
       "username": "luyi56352",
+      "discount":0,
       "unused_discount": 5
     },
     {
@@ -55,6 +57,7 @@ var db = require('../../models/db');
       "source": "xiaoafei",
       "password": "peishi12196",
       "username": "nubeiemea",
+      "discount":0,
       "unused_discount": 5
     },
     ...
@@ -202,6 +205,7 @@ router.post('/', async(ctx, next)=> {
                 source: 'xiaoafei',
                 cost: ctx.request.body.cost,
                 valid: 1,
+                discount:0,
                 unused_discount: 5
             },
             created: Date.now()

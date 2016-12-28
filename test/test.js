@@ -37,13 +37,13 @@ var client = dgram.createSocket('udp4');
 //};
 //
 //data = JSON.stringify(data);
-var message = Buffer.from('test');
-client.send('order_platform', port, host, function (err, bytes) {
-    console.log('complete');
-    if (err)
-        console.error(err);
-    client.close();
-});
+//var message = Buffer.from('test');
+//client.send('order_platform', port, host, function (err, bytes) {
+//    console.log('complete');
+//    if (err)
+//        console.error(err);
+//    client.close();
+//});
 
 //logger.e("key",new Error('test error'));
 
@@ -89,34 +89,38 @@ client.send('order_platform', port, host, function (err, bytes) {
 //    console.log(order_id[0].order_id);
 //})();
 
-//var order = {
-//    'partner_price': 98,
-//    'trade_no': '5465456456',
-//    'success': 1,
-//    'callback': 'http://192.168.3.113:3000/v1/api/callback'
-//};
-//var partner = {'secret': '21321321'};
-//var t = new Date();
-//request({
-//    uri: order.callback,
-//    qs: {
-//        'partner_price': order.partner_price,
-//        'success': order.success,
-//        't': t.getTime(),
-//        'trade_no': order.trade_no,
-//        'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${t.getTime()}${order.trade_no}`).digest('hex')
-//    },json: true
-//}).then((resp)=> {
-//    if(resp && resp.success){
-//        console.log('yes');
-//    }
-//});
+var order = {
+    'partner_price': 0,
+    'trade_no': '20161228152625160CMWGAAA00006',
+    'success': 0,
+    'callback': 'http://120.27.134.79:23300/hf_gezi/chargeChannelAction/notifyUrl.do'
+};
+var partner = {'secret': 'd!GqE$Sz'};
+var t = new Date();
+var time = t.getTime();
+
+request({
+    uri: order.callback,
+    qs: {
+        'amount': order.partner_price,
+        'success': order.success,
+        't': time,
+        'trade_no': order.trade_no,
+        'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex')
+    },json: true
+}).then((resp)=> {
+    console.log(resp);
+    if(resp && resp.success){
+        console.log('yes');
+    }
+});
+
+console.log(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`);
+console.log(crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex'));
 
 //request.get('http://192.168.3.113:3000/v1/api/callback',function(err,respo){
 //   console.log(respo);
 //});
-
-
 
 
 

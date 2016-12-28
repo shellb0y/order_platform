@@ -112,7 +112,7 @@ var db = require('../../models/db');
  * */
 router.get('/', async (ctx, next)=> {
     var orders = await db.sequelize.query(
-        `call order_partner_select_proc('${ctx.request.query.source}','${ctx.request.query.status}',
+        `call order_partner_select_proc('${decodeURIComponent(ctx.request.query.source)}','${decodeURIComponent(ctx.request.query.status)}',
         '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size})`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
