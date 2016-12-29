@@ -7,7 +7,7 @@ require('../date_ex');
 
 //client.lpush('order_platform:phone_charge:order', '20161228152625160CMWGAAA00006');
 
-//client.lpush('order_platform:phone_charge:order_pay_success','20161228152625160CMWGAAA00006',function(err,data){
+//client.lpush('order_platform:phone_charge:order_pay_success','20161229160534215ZWAYAAA00003',function(err,data){
 //    console.log(data);
 //    client.quit();
 //});
@@ -44,11 +44,12 @@ require('../date_ex');
 //});
 
 (async ()=>{
-    if(await redis.hgetSync(client,'order_platform:config','order_accept') == "1")
-        console.log("1");
-    else
-        console.log("0");
-    client.quit();
+    if (await redis.setnxSync(client, `123:1`, 1)) {
+        client.expire(`123:1`, 10 * 60);
+        console.log('111');
+    }else{
+        console.log('2222');
+    }
 })();
 
 

@@ -154,13 +154,13 @@ router.get('/order', async function (ctx, next) {
 
         var redis_client = redis.createClient();
 
-        if(await redis.hgetSync(redis_client,'order_platform:config','order_accept') == '0'){
+        if (await redis.hgetSync(redis_client, 'order_platform:config', 'order_accept') == '0') {
             ctx.body = {'success': false, 'error': {'code': 'RESOURCE_INVALID', 'message': 'resource not enough'}};
             return;
         }
 
         var partner_order_key = `order_platform:partner_orderid:${partner}:${id}`;
-        if(!await redis.setnxSync(redis_client,partner_order_key,1)){
+        if (!await redis.setnxSync(redis_client, partner_order_key, 1)) {
             ctx.body = {'success': false, 'error': {'code': 'REQUEST_INVALID', 'message': 'repeat request'}};
             return;
         }
@@ -425,14 +425,23 @@ router.get('/partner/balance', async function (ctx, next) {
 });
 
 router.get('/test', async function (ctx, next) {
-    //ctx.body = await new Promise((resolve,reject)=>{
-    //    redis2.client.exists("1111",function(err,data){
-    //        if(err)
-    //            console.log(err);
-    //        else
-    //            resolve('1');
-    //    });
-    //});
+    var Redis2 = require('ioredis');
+    var redis2 = new Redis2({
+        port: 6379,          // Redis port
+        host: '139.199.65.115',   // Redis host
+        family: 4,           // 4 (IPv4) or 6 (IPv6)
+        password: 'melodicdeath',
+        db: 0
+    });
+
+    ctx.body = await new Promise((resolve,reject)=>{
+        redis2.exists("1111",function(err,data){
+            if(err)
+                reject(err);
+            else
+                resolve('1');
+        });
+    });
 });
 
 router.get('/callback', async (ctx, next)=> {

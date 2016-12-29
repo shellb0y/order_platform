@@ -132,7 +132,7 @@ router.post('/order/status', async (ctx, next)=> {
     var client = redis.createClient();
     if (ctx.request.body.status == '付款成功' || ctx.request.body.status == '已付款待确认') {
         var key = 'order_platform:phone_charge:pay_task_id_tmp';
-        if (!await redis.setnxSync(client, `${key}:${ctx.request.body.order_id}`, 1)) {
+        if (await redis.setnxSync(client, `${key}:${ctx.request.body.order_id}`, 1)) {
             client.expire(`${key}:${ctx.request.body.order_id}`, 10 * 60);
             client.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
         }
