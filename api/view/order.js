@@ -183,7 +183,7 @@ router.get('/', async (ctx, next)=> {
  ]
  * */
 router.get('/status', async (ctx, next)=> {
-    var status = await db.sequelize.query(`select distinct _data->'$.status' as status from order_`,
+    var status = await db.sequelize.query(`select distinct replace(_data->'$.status','"','') as status from order_`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
