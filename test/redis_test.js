@@ -43,13 +43,13 @@ require('../date_ex');
 //    client.quit();
 //});
 
-//(async ()=>{
-//    if(await redis.getSync(client,`order_platform:switch:order_accpet`) == "1")
-//        console.log("1");
-//    else
-//        console.log("0");
-//    client.quit();
-//})();
+(async ()=>{
+    if(await redis.hgetSync(client,'order_platform:config','order_accept') == "1")
+        console.log("1");
+    else
+        console.log("0");
+    client.quit();
+})();
 
 
 //client.lpush('order_platform:phone_charge:order_pay_success', '20161220141422625XXPVZZA00003', function (err, data) {

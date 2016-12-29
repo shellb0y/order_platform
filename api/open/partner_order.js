@@ -154,7 +154,7 @@ router.get('/order', async function (ctx, next) {
 
         var redis_client = redis.createClient();
 
-        if(await redis.getSync(`order_platform:switch:order_accpet`) == '0'){
+        if(await redis.hgetSync(client,'order_platform:config','order_accept') == '0'){
             ctx.body = {'success': false, 'error': {'code': 'RESOURCE_INVALID', 'message': 'resource not enough'}};
             return;
         }

@@ -59,6 +59,17 @@ exports.hgetallSync = async function (client, key) {
     });
 };
 
+exports.hgetSync = async function (client, key, field) {
+    return await new Promise((resovle, reject)=> {
+        client.hget(key, field, (err, data)=> {
+            if (err)
+                reject(err);
+            else
+                resovle(data);
+        });
+    });
+};
+
 
 exports.incrSync = async (client)=> {
     var index = await new Promise((resovle, reject)=> {
