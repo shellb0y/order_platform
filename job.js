@@ -98,7 +98,7 @@ async function orderFaildMonitor() {
         if (!data) return;
         var _data = JSON.parse(data[1]);
 
-        console.log(_data);
+        //console.log(_data);
 
         var orders = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no' = '${_data.trade_no}' or _data->'$.pay_task_id'='${_data.trade_no}'`,
             {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
@@ -115,7 +115,7 @@ async function orderFaildMonitor() {
             return;
         }
 
-        console.log(order);
+        //console.log(order);
 
         log.i(order.trade_no, `callback partner ${order.partner.name}
         GET ${order.callback}`, program);
