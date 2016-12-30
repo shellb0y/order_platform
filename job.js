@@ -45,7 +45,7 @@ async function orderSuccessMonitor() {
         var t = new Date();
         var time = t.getTime();
         request({
-            uri: order.callback,
+            uri: order.callback,//'http://127.0.0.1:3000/v1/api/callback'
             qs: {
                 'amount': order.partner_price,
                 'success': 1,
@@ -75,7 +75,7 @@ async function orderSuccessMonitor() {
                     log.e(order.trade_no, err, program);
                 }
             });
-            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account_id};`).catch((err)=> {
+            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account.account_id};`).catch((err)=> {
                 if(!err) {
                     client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
                     log.e(order.trade_no, err, program);
