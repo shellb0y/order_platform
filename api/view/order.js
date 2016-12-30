@@ -18,6 +18,7 @@ var db = require('../../models/db');
  * @apiParam {String}   to          结束时间
  * @apiParam {Number}   page_index          页码,从0开始
  * @apiParam {Number}   page_size           每页数据条数
+ * @apiParam {String}   keyword           关键字,现支持账交易号|支付任务号|手机号|京东账号查询
  *
  * @apiSuccess {Object} list 数据列
  * @apiSuccess {String} list.money 订单交易金额
@@ -113,7 +114,7 @@ var db = require('../../models/db');
 router.get('/', async (ctx, next)=> {
     var orders = await db.sequelize.query(
         `call order_partner_select_proc('${decodeURIComponent(ctx.request.query.source)}','${decodeURIComponent(ctx.request.query.status)}',
-        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size})`,
+        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${ctx.request.query.keyword}')`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;

@@ -18,6 +18,7 @@ var db = require('../../models/db');
  * @apiParam {String}   to          结束时间
  * @apiParam {Number}   page_index          页码,从0开始
  * @apiParam {Number}   page_size           每页数据条数
+ * @apiParam {String}   keyword           关键字,现支持账号名称查询
  *
  * @apiSuccess {Object} list 数据列
  * @apiSuccess {String} list.cost 账号成本
@@ -76,8 +77,8 @@ var db = require('../../models/db');
  * */
 router.get('/', async (ctx, next)=> {
     var accounts = await db.sequelize.query(
-        `call account_select_proc('${ctx.request.query.source}','${ctx.request.query.status}',
-        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size})`,
+        `call account_select_proc2('${ctx.request.query.source}','${ctx.request.query.status}',
+        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${ctx.request.query.keyword}')`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;

@@ -26,6 +26,18 @@ exports.lpushSync = async function (client, key, value) {
     });
 };
 
+exports.llenSync = async function (client, key, alias) {
+    return await new Promise((resovle, reject)=> {
+        client.llen(key, (err, data)=> {
+            if (err)
+                reject(err);
+            else {
+                resovle({name: alias, data: {count: data}});
+            }
+        });
+    });
+};
+
 exports.brpopSync = async function (client, queueName, timeout) {
     return await new Promise((resovle, reject)=> {
         client.brpop(queueName, timeout, (err, data)=> {

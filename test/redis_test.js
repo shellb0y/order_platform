@@ -7,7 +7,7 @@ require('../date_ex');
 
 //client.lpush('order_platform:phone_charge:order', '20161228152625160CMWGAAA00006');
 
-//client.lpush('order_platform:phone_charge:order_pay_success','20161229163430184PCLYAAA00009',function(err,data){
+//client.lpush('order_platform:phone_charge:order_pay_success','20161230144127302LSSWABA00013',function(err,data){
 //    console.log(data);
 //    client.quit();
 //});
@@ -37,11 +37,11 @@ require('../date_ex');
 //client.lpush('order_platform:phone_charge:order_pay_success', 'b3f9f6ea3d11475ea55162ef31e2f2d6');
 //client.quit();
 
-var data = {'trade_no': '20161229163430184PCLYAAA00009', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
-client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
-    console.log(data);
-    client.quit();
-});
+//var data = {'trade_no': '20161229163430184PCLYAAA00009', 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
+//client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), function (err, data) {
+//    console.log(data);
+//    client.quit();
+//});
 
 //(async ()=>{
 //    if (await redis.setnxSync(client, `123:1`, 1)) {
@@ -51,6 +51,20 @@ client.lpush('order_platform:phone_charge:order_faild', JSON.stringify(data), fu
 //        console.log('2222');
 //    }
 //})();
+
+(async()=>{
+    var data = await Promise.all([redis.llenSync(client,'order_platform:phone_charge:order_pay_success',"支付队列"),
+        redis.llenSync(client,'order_platform:phone_charge:order_success',"成功队列"),
+        redis.llenSync(client,'order_platform:phone_charge:order_faild',"失败队列")
+    ]).catch(err=>{
+        if (err instanceof Error)
+            throw err;
+        else
+            throw new Error(err);
+    });
+    client.quit();
+    console.log(data);
+})();
 
 
 //client.lpush('order_platform:phone_charge:order_pay_success', '20161220141422625XXPVZZA00003', function (err, data) {
