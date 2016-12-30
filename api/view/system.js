@@ -104,7 +104,7 @@ router.post('/callback/success', async(ctx, next)=> {
 });
 
 /**
- * @api {POST} /callback/faild 订单失败回调
+ * @api {POST} /system/callback/faild 订单失败回调
  * @apiName CALLBACK_FAILD
  * @apiVersion 1.0.0
  * @apiGroup System
@@ -144,7 +144,7 @@ router.post('/callback/faild', async(ctx, next)=> {
 
 
 /**
- * @api {GET} /queue 获取队列信息
+ * @api {GET} /system/queue 获取队列信息
  * @apiName GET_QUEUE
  * @apiVersion 1.0.0
  * @apiGroup System

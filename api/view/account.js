@@ -78,7 +78,7 @@ var db = require('../../models/db');
 router.get('/', async (ctx, next)=> {
     var accounts = await db.sequelize.query(
         `call account_select_proc2('${ctx.request.query.source}','${ctx.request.query.status}',
-        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${ctx.request.query.keyword}')`,
+        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${decodeURIComponent(ctx.request.query.keyword)}')`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;

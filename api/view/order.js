@@ -114,7 +114,7 @@ var db = require('../../models/db');
 router.get('/', async (ctx, next)=> {
     var orders = await db.sequelize.query(
         `call order_partner_select_proc('${decodeURIComponent(ctx.request.query.source)}','${decodeURIComponent(ctx.request.query.status)}',
-        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${ctx.request.query.keyword}')`,
+        '${ctx.request.query.from}','${ctx.request.query.to}',${ctx.request.query.page_index},${ctx.request.query.page_size},'${decodeURIComponent(ctx.request.query.keyword)}')`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
@@ -141,8 +141,8 @@ router.get('/', async (ctx, next)=> {
             }
         };
 
-        if(!ctx.request.query.s) {
-            for(var l of resp.list) {
+        if (!ctx.request.query.s) {
+            for (var l of resp.list) {
                 delete l.money;
                 delete l.amount;
                 delete l.dxqids;
@@ -169,18 +169,18 @@ router.get('/', async (ctx, next)=> {
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
-     {
-       "status": "\"充值成功\""
-     },
-     {
-       "status": "\"下单失败\""
-     },
-     {
-       "status": "\"充值失败\""
-     },
-     {
-       "status": "\"正在下单\""
-     }
+ {
+   "status": "\"充值成功\""
+ },
+ {
+   "status": "\"下单失败\""
+ },
+ {
+   "status": "\"充值失败\""
+ },
+ {
+   "status": "\"正在下单\""
+ }
  ]
  * */
 router.get('/status', async (ctx, next)=> {
