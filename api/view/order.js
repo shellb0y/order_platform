@@ -107,7 +107,8 @@ var db = require('../../models/db');
    "pageCurrent": 1,
    "stat": {
      "总金额": 400,
-     "对账金额": 388
+     "应付金额": 388,
+     "实付金额":350
    }
  }
  * */
@@ -136,8 +137,9 @@ router.get('/', async (ctx, next)=> {
             total: orders[1]['0'].total_count,
             pageCurrent: Number(ctx.request.query.page_index) + 1,
             stat: {
-                '总金额': orders[2]['0'].total_price,
-                '对账金额': orders[2]['0'].partner_price
+                '总金额': orders[2]['0'].order_amount,
+                '应付金额': orders[2]['0'].partner_amount,
+                '实付金额': orders[3]['0'].real_amount
             }
         };
 
@@ -152,6 +154,8 @@ router.get('/', async (ctx, next)=> {
                 delete l.jd_price;
                 delete l.jd_order_id;
             }
+
+            delete resp.stat.实付金额;
         }
         ctx.body = resp;
     }
