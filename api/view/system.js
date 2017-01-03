@@ -130,7 +130,7 @@ router.post('/callback/success', async(ctx, next)=> {
 router.post('/callback/faild', async(ctx, next)=> {
     var data = {'trade_no': ctx.request.body.trade_no, 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
     var redis_client = redis.createClient();
-    var data = await redis_client.lpushSync(redis_client, 'order_platform:phone_charge:order_faild', JSON.stringify(data)).catch((err)=> {
+    var data = await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_faild', JSON.stringify(data)).catch((err)=> {
         if (err instanceof Error)
             throw err;
         else
@@ -166,7 +166,8 @@ router.get('/queue', async(ctx, next)=> {
     var redis_client = redis.createClient();
     var data = await Promise.all([redis.llenSync(redis_client,'order_platform:phone_charge:order_pay_success','支付队列'),
         redis.llenSync(redis_client,'order_platform:phone_charge:order_success','成功队列'),
-        redis.llenSync(redis_client,'order_platform:phone_charge:order_faild','失败队列')
+        redis.llenSync(redis_client,'order_platform:phone_charge:order_faild','失败队列'),
+        redis.llenSync(redis_client,'order_platform:phone_charge:order_save_faild','异常队列')
     ]).catch(err=>{
         if (err instanceof Error)
             throw err;

@@ -25,10 +25,10 @@ var logger = require('../logger');
 //logger.e("key","err order_platform","order_platform");
 
 
-var dgram = require('dgram');
-var host = '115.28.102.142';
-var port = 55514;
-var client = dgram.createSocket('udp4');
+//var dgram = require('dgram');
+//var host = '115.28.102.142';
+//var port = 55514;
+//var client = dgram.createSocket('udp4');
 //var data = {
 //    'program': program || 'order_platform',
 //    '@tags': key || [],
@@ -88,39 +88,6 @@ var client = dgram.createSocket('udp4');
 //        {type: db.sequelize.QueryTypes.SELECT});
 //    console.log(order_id[0].order_id);
 //})();
-
-var order = {
-    'partner_price': 98,
-    'trade_no': '20161228152642651VFSRAAA00007',
-    'success': 1,
-    'callback': 'http://120.27.134.79:23300/hf_gezi/chargeChannelAction/notifyUrl.do'
-};
-var partner = {'secret': 'd!GqE$Sz'};
-var t = new Date();
-var time = t.getTime();
-
-request({
-    uri: order.callback,
-    qs: {
-        'amount': order.partner_price,
-        'success': order.success,
-        't': time,
-        'trade_no': order.trade_no,
-        'sign': crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex')
-    },json: true
-}).then((resp)=> {
-    console.log(resp);
-    if(resp && resp.success){
-        console.log('yes');
-    }
-});
-
-console.log(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`);
-console.log(crypto.createHash('md5').update(`${order.partner_price}${partner.secret}${order.success}${time}${order.trade_no}`).digest('hex'));
-
-//request.get('http://192.168.3.113:3000/v1/api/callback',function(err,respo){
-//   console.log(respo);
-//});
 
 
 
