@@ -24,8 +24,8 @@ module.exports = function () {
     //    });
     //}, null, true);
 
-    orderSuccessMonitor();
-    orderFaildMonitor();
+    //orderSuccessMonitor();
+    //orderFaildMonitor();
 };
 
 
@@ -45,7 +45,7 @@ async function orderSuccessMonitor() {
         var t = new Date();
         var time = t.getTime();
         request({
-            uri: order.callback,//'http://127.0.0.1:3000/v1/api/callback'
+            uri: 'http://127.0.0.1:3000/v1/api/callback',//order.callback
             qs: {
                 'amount': order.partner_price,
                 'success': 1,
@@ -59,15 +59,15 @@ async function orderSuccessMonitor() {
             if (resp && resp.success)
                 callback_status = '回调成功';
 
-            db.sequelize.query(`update order_ set _data=JSON_SET(_data,
-                    '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
-                    '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
-                     where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                if(!err) {
-                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                    log.e(order.trade_no, err, program);
-                }
-            });
+            //db.sequelize.query(`update order_ set _data=JSON_SET(_data,
+            //        '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
+            //        '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
+            //         where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
+            //    if(!err) {
+            //        client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+            //        log.e(order.trade_no, err, program);
+            //    }
+            //});
             db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'-${order.partner_price})
                      where _data->'$.name'='${partner.name}'`).catch((err)=> {
                 if(!err) {
