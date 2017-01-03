@@ -8,4 +8,4 @@
 # http://139.199.65.115:3000/api/view/account
 
 curl -X POST -d "trade_no=20161227162725190VOGCZZA00002" \
--H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/system/callback/faild
+-H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/system/callback/paysuccess

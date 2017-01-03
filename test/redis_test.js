@@ -4,6 +4,7 @@
 var redis = require("../redis");
 var client = redis.createClient();
 require('../date_ex');
+var db = require('../models/db');
 
 //client.lpush('order_platform:phone_charge:order', '20161228152625160CMWGAAA00006');
 
@@ -52,18 +53,26 @@ require('../date_ex');
 //    }
 //})();
 
-(async()=>{
-    var data = await Promise.all([redis.llenSync(client,'order_platform:phone_charge:order_pay_success',"支付队列"),
-        redis.llenSync(client,'order_platform:phone_charge:order_success',"成功队列"),
-        redis.llenSync(client,'order_platform:phone_charge:order_faild',"失败队列")
-    ]).catch(err=>{
-        if (err instanceof Error)
-            throw err;
-        else
-            throw new Error(err);
+//(async()=>{
+//    var data = await Promise.all([redis.llenSync(client,'order_platform:phone_charge:order_pay_success',"支付队列"),
+//        redis.llenSync(client,'order_platform:phone_charge:order_success',"成功队列"),
+//        redis.llenSync(client,'order_platform:phone_charge:order_faild',"失败队列")
+//    ]).catch(err=>{
+//        if (err instanceof Error)
+//            throw err;
+//        else
+//            throw new Error(err);
+//    });
+//    client.quit();
+//    console.log(data);
+//})();
+
+(async ()=>{
+    var order = await db.sequelize.query(`select _data from order_ where _data->'$.pay_task_id'='2131'`
+    ,{type: db.sequelize.QueryTypes.SELECT}).catch((err)=> {
+        console.error(err);
     });
-    client.quit();
-    console.log(data);
+    console.log(JSON.stringify(order[0]._data));
 })();
 
 

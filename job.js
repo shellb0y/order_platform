@@ -45,7 +45,7 @@ async function orderSuccessMonitor() {
         var t = new Date();
         var time = t.getTime();
         request({
-            uri: 'order.callback',//http://127.0.0.1:3000/v1/api/callback
+            uri: order.callback,//http://127.0.0.1:3000/v1/api/callback
             qs: {
                 'amount': order.partner_price,
                 'success': 1,
@@ -59,30 +59,45 @@ async function orderSuccessMonitor() {
             if (resp && resp.success)
                 callback_status = '回调成功';
 
-            db.sequelize.query(`update order_ set _data=JSON_SET(_data,
-                    '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
-                    '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
-                     where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                if(!err) {
-                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                    log.e(order.trade_no, err, program);
-                }
-            });
-            db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'-${order.partner_price})
-                     where _data->'$.name'='${partner.name}'`).catch((err)=> {
-                if(!err) {
-                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                    log.e(order.trade_no, err, program);
-                }
-            });
-            db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account.account_id};`).catch((err)=> {
-                if(!err) {
-                    client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                    log.e(order.trade_no, err, program);
-                }
-            });
+            //db.sequelize.query(`update order_ set _data=JSON_SET(_data,
+            //        '$.status','充值成功','$.callback_status','${callback_status}','$.order_sync_jd_status_time','${order.order_sync_jd_status_time}',
+            //        '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
+            //         where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
+            //    if(!err) {
+            //        client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+            //        log.e(order.trade_no, err, program);
+            //    }
+            //});
+            //db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'-${order.partner_price})
+            //         where _data->'$.name'='${partner.name}'`).catch((err)=> {
+            //    if(!err) {
+            //        client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+            //        log.e(order.trade_no, err, program);
+            //    }
+            //});
+            //db.sequelize.query(`update account_ set _data=json_set(_data,'$.pay_status',1,'$.discount',${order.discount},'$.unused_discount',_data->'$.unused_discount'-${order.discount}) where account_id=${order.account.account_id};`).catch((err)=> {
+            //    if(!err) {
+            //        client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
+            //        log.e(order.trade_no, err, program);
+            //    }
+            //});
 
-            client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
+            db.sequelize.query(
+                `call order_success_tran_update('${callback_status}','${order.order_sync_jd_status_time}',
+                    '${t.format('yyyy-MM-dd hh:mm:ss')}','${new Date().format('yyyy-MM-dd hh:mm:ss')}',
+                    '${order.trade_no}',${order.partner_price},'${partner.name}',${order.discount},${order.account.account_id})`).then(data=> {
+                if (!data['0'].t_error) {
+                    client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
+                    log.i(order.trade_no, 'all success', program);
+                }
+                else {
+                    client.lpush('order_platform:phone_charge:order_save_faild', order.trade_no);
+                    log.e(order.trade_no, 'handle faild', program);
+                }
+            }).catch(err=> {
+                log.e(order.trade_no, err, program);
+                client.lpush('order_platform:phone_charge:order_save_faild', order.trade_no);
+            });
         }).catch(function (err) {
             log.e(order.trade_no, err, program);
             client.lpush('order_platform:phone_charge:order_success', data[1]);
@@ -142,11 +157,11 @@ async function orderFaildMonitor() {
                     '$.status','充值失败','$.callback_status','${callback_status}','$.order_faild_time','${_data.order_faild_time}',
                     '$.order_callback_time','${t.format('yyyy-MM-dd hh:mm:ss')}','$.order_callback_complete_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
-                if(!err) {
+                if (!err) {
                     client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
                     log.e(err);
                 }
-            }).then(data=>{
+            }).then(data=> {
                 client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
             });
         }).catch(function (err) {

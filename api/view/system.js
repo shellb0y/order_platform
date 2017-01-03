@@ -31,17 +31,41 @@ require('../../date_ex');
  * }
  * */
 router.post('/callback/paysuccess', async(ctx, next)=> {
-    var redis_client = redis.createClient();
-    var data =await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_pay_success', ctx.request.body.trade_no).catch((err)=> {
-        if (err instanceof Error)
-            throw err;
-        else
-            throw new Error(err);
-    });
-    redis_client.quit();
+    //var redis_client = redis.createClient();
+    //var data =await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_pay_success', ctx.request.body.trade_no).catch((err)=> {
+    //    if (err instanceof Error)
+    //        throw err;
+    //    else
+    //        throw new Error(err);
+    //});
+    //redis_client.quit();
+    //
 
-    console.log(`manual callback paysuccess:${data.trade_no},push order_pay_success,${data}`);
-    ctx.body = {'success': true};
+    //ctx.body = {'success': true};
+
+    var redis_client = redis.createClient();
+
+    var key = 'order_platform:phone_charge:pay_task_id_tmp';
+    var trade_no = ctx.request.body.trade_no;
+    if (await redis.setnxSync(redis_client, `${key}:${trade_no}`, 1)) {
+        redis_client.expire(`${key}:${ctx.request.body.order_id}`, 10 * 60);
+        var order = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no'='${trade_no}'`
+            ,{type: db.sequelize.QueryTypes.SELECT}).catch((err)=> {
+            redis_client.del(`${key}:${trade_no}`);
+            if (err instanceof Error)
+                throw err;
+            else
+                throw new Error(err);
+        });
+        console.log(`manual callback paysuccess:${trade_no},push queue order_pay_success}`);
+        redis_client.lpush('order_platform:phone_charge:order_pay_success', order[0]._data);
+        ctx.body = {'success': true};
+    }else{
+        console.log('repeat callback');
+        ctx.body = {'success': false,'err':'repeat request'};
+    }
+
+    redis_client.quit();
 });
 
 /**

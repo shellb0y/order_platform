@@ -121,8 +121,8 @@ router.get('/order/status/:id', async (ctx, next)=> {
 });
 
 router.post('/order/status', async (ctx, next)=> {
-    var ret = await db.sequelize.query(`update order_ set _data=JSON_SET(_data,'$.status','${decodeURI(ctx.request.body.status)}','$.pay_callback_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
-    where _data->'$.pay_task_id'='${ctx.request.body.order_id}'`).catch((err)=> {
+    await db.sequelize.query(`update order_ set _data=JSON_SET(_data,'$.status','${decodeURI(ctx.request.body.status)}','$.pay_callback_time','${new Date().format('yyyy-MM-dd hh:mm:ss')}')
+    where _data->'$.trade_no'='${ctx.request.body.order_id}'`).catch((err)=> {
         if (err instanceof Error)
             throw err;
         else
@@ -134,7 +134,17 @@ router.post('/order/status', async (ctx, next)=> {
         var key = 'order_platform:phone_charge:pay_task_id_tmp';
         if (await redis.setnxSync(client, `${key}:${ctx.request.body.order_id}`, 1)) {
             client.expire(`${key}:${ctx.request.body.order_id}`, 10 * 60);
-            client.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
+            var order = await db.sequelize.query(`select _data from order_ where _data->'$.trade_no'='${ctx.request.body.order_id}'`
+                ,{type: db.sequelize.QueryTypes.SELECT}).catch((err)=> {
+                client.del(`${key}:${ctx.request.body.order_id}`);
+                if (err instanceof Error)
+                    throw err;
+                else
+                    throw new Error(err);
+            });
+            //client.lpush('order_platform:phone_charge:order_pay_success', ctx.request.body.order_id);
+            client.lpush('order_platform:phone_charge:order_pay_success', order[0]._data);
+
         }
     } else if (ctx.request.body.status == '付款失败') {
         client.lpush('order_platform:phone_charge:order_faild', ctx.request.body.order_id);
