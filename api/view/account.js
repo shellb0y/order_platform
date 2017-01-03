@@ -104,7 +104,7 @@ router.get('/', async (ctx, next)=> {
                 '已使用优惠券金额': accounts[2]['0'].used_discount,
                 '使用成功账号数': accounts[3]['0'].account_count_success,
                 '使用失败账号数': accounts[4]['0'].account_count_faild,
-                '未使用账号数': accounts[5]['0'].account_count_unused
+                '未使用账号数': accounts[2]['0'].account_count - accounts[3]['0'].account_count_success - accounts[4]['0'].account_count_faild
             }
         };
     }
@@ -206,7 +206,7 @@ router.post('/', async(ctx, next)=> {
                 source: 'xiaoafei',
                 cost: ctx.request.body.cost,
                 valid: 1,
-                discount:0,
+                discount: 0,
                 unused_discount: 5
             },
             created: Date.now()
