@@ -135,7 +135,7 @@ router.get('/:partner_name', async (ctx, next)=> {
  *  }
  * ]
  * */
-router.put('/charge', async (ctx, next)=> {
+router.post('/charge', async (ctx, next)=> {
     var ret = await db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',${ctx.request.body.money}
     ,'$.charge_time','${new Date().format("yyyy-MM-dd hh:mm:ss")}') where partner_id = ${ctx.request.body.id}`).catch(err=> {
         if (err instanceof Error)
@@ -176,7 +176,7 @@ router.put('/charge', async (ctx, next)=> {
  *  }
  * ]
  * */
-router.put('/balance', async (ctx, next)=> {
+router.post('/balance', async (ctx, next)=> {
     var ret = await db.sequelize.query(`update partner set _data=json_set(_data,'$.balance',_data->'$.balance'+${ctx.request.body.money},'$.hand_modified','${new Date().format("yyyy-MM-dd hh:mm:ss")}')
         where partner_id = ${ctx.request.body.id}`).catch(err=> {
         if (err instanceof Error)
