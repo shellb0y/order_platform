@@ -105,6 +105,7 @@ router.get('/:partner_name', async (ctx, next)=> {
 
 /**
  * @api {PUT} /partner/charge 商户账户充值
+ * @apiIgnore
  * @apiName PARTNER_CHARGE
  * @apiVersion 1.0.0
  * @apiGroup Partner
@@ -143,6 +144,9 @@ router.put('/charge', async (ctx, next)=> {
  * @apiName PARTNER_BALANCE
  * @apiVersion 1.0.0
  * @apiGroup Partner
+ *
+ * @apiParam {decimal}  money       金额,减款时传入负数
+ * @apiParam {Number}   id          商户ID
  *
  * @apiDescription 商户账户加减款
  *
