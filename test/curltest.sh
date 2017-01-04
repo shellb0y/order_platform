@@ -7,5 +7,11 @@
 #"戴枝昭耿芸育lrX6----cnm2016*----qq345678----pin=%E6%88%B4%E6%9E%9D%E6%98%AD%E8%80%BF%E8%8A%B8%E8%82%B2lrX6; wskey=AAFYYg9PAFA1B1-FVsNRfCcbA1xCaU9_xDo1yPdHbjS90zNNdbqsz_0utNf5N-PxFfqG5V-OWzSqgSj97-JJcZJYEQ_A7d3zF2jkm3m7Wj4ZLSonvMXmJQ; whwswswws=; uuid=010185182301363-8C5E01E137BF;"]}'\
 # http://139.199.65.115:3000/api/view/account
 
-curl -X POST -d "trade_no=20161227162725190VOGCZZA00002" \
--H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/system/callback/paysuccess
+#curl -X POST -d "trade_no=20161227162725190VOGCZZA00002" \
+#-H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/system/callback/paysuccess
+
+curl -X PUT -d "money=100000&id=3" \
+-H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/partner/charge
+
+#curl -X PUT -d "money=100000&id=3" \
+#-H "Content-Type:application/x-www-form-urlencoded;charset=utf-8" -i http://localhost:3000/api/view/partner/balance
