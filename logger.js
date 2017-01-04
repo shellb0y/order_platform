@@ -9,14 +9,14 @@ function send2Server(level, key, msg, program) {
     var client = dgram.createSocket('udp4');
     var data = {
         'program': program || 'order_platform',
-        '@tags': key || [],
+        '@fields.key': key || [],
         'message': msg,
         '@fields.levelname': level
     };
 
     data = JSON.stringify(data);
-    //var message = Buffer.from(data);
-    var message = new Buffer(data);
+    var message = Buffer.from(data);
+    //var message = new Buffer(data);
     client.send(message, 0, message.length, port, host, function (err, bytes) {
         if (err)
             console.error(err);
@@ -35,7 +35,7 @@ exports.i = (key, message, program)=> {
 
 exports.w = (key, message, program)=> {
     console.log(message);
-    send2Server("WARN", message, program);
+    send2Server("WARN",key, message, program);
 };
 
 exports.d = (key, message, program)=> {

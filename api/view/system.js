@@ -6,6 +6,8 @@ var db = require('../../models/db');
 var redis = require("../../redis");
 require('../../date_ex');
 
+var program = 'order_platform_api';
+
 /**
  * @api {POST} /system/callback/paysuccess 支付成功回调
  * @apiName CALLBACK_PAYSUCCESS
@@ -42,6 +44,8 @@ router.post('/callback/paysuccess', async(ctx, next)=> {
     //
 
     //ctx.body = {'success': true};
+
+    logger.i('/callback/paysuccess', ctx.request.body, program);
 
     var redis_client = redis.createClient();
 
@@ -93,6 +97,7 @@ router.post('/callback/paysuccess', async(ctx, next)=> {
  * }
  * */
 router.post('/callback/success', async(ctx, next)=> {
+    logger.i('/callback/success', ctx.request.body, program);
     var trade_no = ctx.request.body.trade_no;
     if (!trade_no) {
         ctx.body = {'success': false, 'err': '找不到订单'};
@@ -152,6 +157,7 @@ router.post('/callback/success', async(ctx, next)=> {
  * }
  * */
 router.post('/callback/faild', async(ctx, next)=> {
+    logger.i('/callback/faild', ctx.request.body, program);
     var data = {'trade_no': ctx.request.body.trade_no, 'order_falid_time': new Date().format('yyyy-MM-dd hh:mm:ss')};
     var redis_client = redis.createClient();
     var data = await redis.lpushSync(redis_client, 'order_platform:phone_charge:order_faild', JSON.stringify(data)).catch((err)=> {

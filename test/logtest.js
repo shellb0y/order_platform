@@ -3,7 +3,7 @@
  */
 var Logstash = require('logstash-client');
 
-var host = '115.28.102.142';
+var host = '192.168.0.64';
 var port = 514;
 
 var logstash = new Logstash({

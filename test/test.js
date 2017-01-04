@@ -18,23 +18,23 @@ var logger = require('../logger');
 //    console.log(trade_no);
 //})();
 
-//logger.t("trace");
-//logger.d("key","debug order_platform","order_platform");
-//logger.i("key","info order_platform","order_platform");
-//logger.w("key","warn order_platform","order_platform");
-//logger.e("key","err order_platform","order_platform");
+logger.t("trace");
+logger.d(["key1",'key2'],"debug order_platform","order_platform");
+logger.i("key","info order_platform","order_platform");
+logger.w("key","warn order_platform","order_platform");
+logger.e("key","err order_platform","order_platform");
 
 
-var dgram = require('dgram');
-var host = '115.28.102.142';
-var port = 55514;
-var client = dgram.createSocket('udp4');
-var data = {
-    'program': program || 'order_platform',
-    '@tags': key || [],
-    'message': msg,
-    '@fields.levelname': level
-};
+//var dgram = require('dgram');
+//var host = '192.168.0.64';
+//var port = 55514;
+//var client = dgram.createSocket('udp4');
+//var data = {
+//    'program': program || 'order_platform',
+//    '@tags': key || [],
+//    'message': msg,
+//    '@fields.levelname': level
+//};
 //
 //data = JSON.stringify(data);
 //var message = Buffer.from('test');

@@ -9,8 +9,6 @@ var crypto = require('crypto');
 var log = require('./logger');
 require('./date_ex');
 
-var program = 'order_platform_callback';
-
 module.exports = function () {
     //new cronJob('0 0 0 * * *', function () {
     //    var client = redis.createClient();
@@ -30,10 +28,12 @@ module.exports = function () {
 
 
 async function orderSuccessMonitor() {
+    var program = 'order_platform_ordersuccess';
     var client = redis.createClient();
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_success', 1);
         //console.log(data);
+        log.i('queue', data, program);
         if (!data) return;
         var order = JSON.parse(data[1]);
         //console.log(order);
@@ -106,10 +106,12 @@ async function orderSuccessMonitor() {
 }
 
 async function orderFaildMonitor() {
+    var program = 'order_platform_orderfaild';
     var client = redis.createClient();
     setInterval(async function () {
         var data = await redis.brpopSync(client, 'order_platform:phone_charge:order_faild', 1);
         //console.log(data);
+        log.i('queue', data, program);
         if (!data) return;
         var _data = JSON.parse(data[1]);
 
@@ -159,10 +161,11 @@ async function orderFaildMonitor() {
                      where _data->'$.trade_no'='${order.trade_no}'`).catch((err)=> {
                 if (!err) {
                     client.lpush('order_platform:phone_charge:order_save_faild', data[1]);
-                    log.e(err);
+                    log.e(order.trade_no, err, program);
                 }
             }).then(data=> {
                 client.del(`order_platform:phone_charge:trade_no:${order.trade_no}`);
+                log.i(order.trade_no, 'all success', program);
             });
         }).catch(function (err) {
             log.e(order.trade_no, err, program);

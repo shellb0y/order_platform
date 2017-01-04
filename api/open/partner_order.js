@@ -11,8 +11,10 @@ var redis = require("../../redis");
 var utility = require('../../utility');
 require('../../date_ex');
 require('../../string_ex');
+var logger = require('../../logger');
 
 var debug = 1;
+var program = 'order_platform_api';
 
 function md5(text) {
     return crypto.createHash('md5').update(text).digest('hex');
@@ -70,7 +72,7 @@ function md5(text) {
  *     }
  * */
 router.get('/order', async function (ctx, next) {
-    console.log(ctx.request.query);
+    logger.i('/v1/api/order', ctx.request.query, program);
 
     var sign = ctx.request.query.sign;
     var t = ctx.request.query.t;
@@ -189,14 +191,18 @@ router.get('/order', async function (ctx, next) {
             'order_timeout': order_timeout
         };
 
+        logger.d(['/v1/api/order',mobile,trade_no], order, program);
+
         redis_client.hmset(`order_platform:phone_charge:trade_no:${trade_no}`, order);
         redis_client.expire(`order_platform:phone_charge:trade_no:${trade_no}`, 11 * 60 * 60);
         redis_client.lpush('order_platform:phone_charge:order', trade_no);
         redis_client.quit();
 
         ret = {'success': true, 'data': {'trade_no': trade_no}};
+        logger.d(['/v1/api/order',mobile,trade_no], "accpet", program);
     }
     else {
+        logger.d(['/v1/api/order',mobile,id], 'SIGN_INVALID', program);
         ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
     }
 
@@ -434,9 +440,9 @@ router.get('/test', async function (ctx, next) {
         db: 0
     });
 
-    ctx.body = await new Promise((resolve,reject)=>{
-        redis2.exists("1111",function(err,data){
-            if(err)
+    ctx.body = await new Promise((resolve, reject)=> {
+        redis2.exists("1111", function (err, data) {
+            if (err)
                 reject(err);
             else
                 resolve('1');
