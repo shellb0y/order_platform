@@ -28,23 +28,29 @@ require('../../date_ex');
  *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
- *[
  *    {
- *      "_data": "{\"code\": \"AA\", \"name\": \"yichongbao_1213\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"易充宝\", \"secret\": \"d!GqE$Sz\", \"balance\": 98040, \"charge_time\": \"2016-12-01\", \"order_timeout\": \"600\"}"
+ *      "partner_id": 1,
+ *      "_data": "{\"code\": \"AA\", \"name\": \"yichongbao_1213\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"易充宝\", \"secret\": \"d!GqE$Sz\", \"balance\": 98040, \"charge_time\": \"2016-12-01\", \"hand_modified\": \"\", \"order_timeout\": \"600\"}",
+ *      "created": "2016-12-11"
  *    },
  *    {
- *      "_data": "{\"code\": \"AB\", \"name\": \"huifuxinxi\", \"price\": {\"电信\": 98, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"惠付信息\", \"secret\": \"3!hw3nAP\", \"balance\": 96766, \"charge_time\": \"2016-12-01\", \"order_timeout\": \"30\"}"
+ *      "partner_id": 2,
+ *      "_data": "{\"code\": \"AB\", \"name\": \"huifuxinxi\", \"price\": {\"电信\": 98, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"惠付信息\", \"secret\": \"3!hw3nAP\", \"balance\": 96766, \"charge_time\": \"2016-12-01\", \"hand_modified\": \"\", \"order_timeout\": \"30\"}",
+ *      "created": "2016-12-15"
  *    },
  *    {
- *      "_data": "{\"code\": \"ZZ\", \"name\": \"fbtest\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"测试\", \"secret\": \"0Y$$sTx0\", \"balance\": 99416, \"charge_time\": \"2016-12-01\", \"order_timeout\": \"0\"}"
+ *      "partner_id": 3,
+ *      "_data": "{\"code\": \"ZZ\", \"name\": \"fbtest\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"测试\", \"secret\": \"0Y$$sTx0\", \"balance\": 100000, \"charge_time\": \"2017-01-04 10:29:07\", \"hand_modified\": \"2017-01-04 10:28:25\", \"order_timeout\": \"0\"}",
+ *      "created": "2016-12-19"
  *    },
  *    {
- *      "_data": "{\"name\": \"xianshang\", \"remark\": \"线尚\", \"source\": [\"xiaoafei\"], \"partner\": 1}"
+ *      "partner_id": 4,
+ *      "_data": "{\"name\": \"xianshang\", \"remark\": \"线尚\", \"source\": [\"xiaoafei\"], \"partner\": 1}",
+ *      "created": "2016-12-21"
  *    }
- *]
  * */
 router.get('/', async(ctx, next)=> {
-    var partners = await db.sequelize.query(`select _data from partner`,
+    var partners = await db.sequelize.query(`select * from partner`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;
@@ -80,19 +86,23 @@ router.get('/', async(ctx, next)=> {
  * HTTP/1.1 200 OK
  * [
  *  {
- *  "_data": "{\"code\": \"AA\", \"name\": \"yichongbao_1213\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"易充宝\", \"secret\": \"d!GqE$Sz\", \"balance\": 98040, \"charge_time\": \"2016-12-01\", \"order_timeout\": \"600\"}"
+ *     "partner_id": 1,
+ *     "_data": "{\"code\": \"AA\", \"name\": \"yichongbao_1213\", \"price\": {\"电信\": 97, \"移动\": 98, \"联通\": 98}, \"enable\": 1, \"remark\": \"易充宝\", \"secret\": \"d!GqE$Sz\", \"balance\": 98040, \"charge_time\": \"2016-12-01\", \"hand_modified\": \"\", \"order_timeout\": \"600\"}",
+ *     "created": "2016-12-11"
  *  }
  * ]
 
  * HTTP/1.1 200 OK
  * [
  *  {
+ *  "partner_id": 1,
  *  "_data": "{\"name\": \"xianshang\", \"partner\": 1, \"source\": [\"xiaoafei\"]}"
+ *  "created": "2016-12-11"
  *  }
  * ]
  * */
 router.get('/:partner_name', async (ctx, next)=> {
-    var partners = await db.sequelize.query(`select _data from partner where _data->'$.name'='${ctx.params.partner_name}'`,
+    var partners = await db.sequelize.query(`select * from partner where _data->'$.name'='${ctx.params.partner_name}'`,
         {type: db.sequelize.QueryTypes.SELECT}).catch(err=> {
         if (err instanceof Error)
             throw err;

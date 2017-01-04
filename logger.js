@@ -15,7 +15,8 @@ function send2Server(level, key, msg, program) {
     };
 
     data = JSON.stringify(data);
-    var message = Buffer.from(data);
+    //var message = Buffer.from(data);
+    var message = new Buffer(data);
     client.send(message, 0, message.length, port, host, function (err, bytes) {
         if (err)
             console.error(err);

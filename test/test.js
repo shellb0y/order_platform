@@ -25,16 +25,16 @@ var logger = require('../logger');
 //logger.e("key","err order_platform","order_platform");
 
 
-//var dgram = require('dgram');
-//var host = '115.28.102.142';
-//var port = 55514;
-//var client = dgram.createSocket('udp4');
-//var data = {
-//    'program': program || 'order_platform',
-//    '@tags': key || [],
-//    'message': msg,
-//    '@fields.levelname': level
-//};
+var dgram = require('dgram');
+var host = '115.28.102.142';
+var port = 55514;
+var client = dgram.createSocket('udp4');
+var data = {
+    'program': program || 'order_platform',
+    '@tags': key || [],
+    'message': msg,
+    '@fields.levelname': level
+};
 //
 //data = JSON.stringify(data);
 //var message = Buffer.from('test');
