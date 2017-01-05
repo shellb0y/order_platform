@@ -4,6 +4,7 @@
 const router = require('koa-router')();
 const exec = require('child_process').exec;
 const logger = require('../logger');
+const path = require('path');
 
 
 router.post('/github', async(ctx, next) => {
