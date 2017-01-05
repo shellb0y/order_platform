@@ -16,6 +16,7 @@ const order = require('./api/order');
 const partner_order_api = require('./api/open/partner_order');
 const partner_api = require('./api/partner');
 const account_api = require('./api/account');
+const deploy_api = require('./api/deploy');
 const view_account_api = require('./api/view/account');
 const view_order_api = require('./api/view/order');
 const view_partner_api = require('./api/view/partner');
@@ -62,6 +63,7 @@ router.use('/test/api', partner_order_api_test.routes(), partner_order_api_test.
 router.use('/api', order.routes(), order.allowedMethods());
 router.use('/api/partner', partner_api.routes(), partner_api.allowedMethods());
 router.use('/api/account', account_api.routes(), account_api.allowedMethods());
+router.use('/api/deploy', deploy_api.routes(), deploy_api.allowedMethods());
 router.use('/api/view/account', view_account_api.routes(), view_account_api.allowedMethods());
 router.use('/api/view/order', view_order_api.routes(), view_order_api.allowedMethods());
 router.use('/api/view/partner', view_partner_api.routes(), view_partner_api.allowedMethods());

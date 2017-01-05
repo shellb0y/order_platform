@@ -452,7 +452,7 @@ router.get('/test', async function (ctx, next) {
 
 router.get('/callback', async (ctx, next)=> {
     console.log(ctx.request.query);
-    ctx.body = {'success': 1}
+    ctx.body = {'success': 3}
 });
 
 module.exports = router;

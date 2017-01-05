@@ -5,7 +5,8 @@
   "scripts": {
     "start": "./node_modules/.bin/nodemon bin/run",
     "koa": "./node_modules/.bin/runkoa bin/www",
-    "pm2": "pm2 start bin/run ",
+    "pm2": "./node_modules/.bin/pm2 start bin/run --watch",
+    "pm2_docker": "./node_modules/.bin/pm2-docker start bin/run --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "gen_doc_open": "apidoc  -i api/open/ -o doc/open_api -t api_doc_template/ --debug && npm start",
     "gen_doc_view": "apidoc  -i api/view/ -o doc/view_api -t api_doc_template/ --debug && npm start",
@@ -32,6 +33,7 @@
     "logstash-client": "^1.1.1",
     "marked": "^0.3.6",
     "mysql": "^2.12.0",
+    "pm2": "^2.2.3",
     "redis": "^2.6.3",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
