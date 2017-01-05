@@ -13,7 +13,7 @@ require('../../date_ex');
 require('../../string_ex');
 var logger = require('../../logger');
 
-var debug = 1;
+var debug = 0;
 var program = 'order_platform_api';
 
 function md5(text) {
